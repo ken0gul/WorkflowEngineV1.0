@@ -1,0 +1,39 @@
+﻿@model IEnumerable<WorkflowEngineV1._0.Models.Workflow>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+</head>
+<body>
+    <div id="sidebar">
+        <div class="task" data-id="" draggable="true">
+            Task1
+            <div class="dot"></div>
+        </div>
+        <div class="task" data-id="" draggable="true">
+            Task2
+            <div class="dot"></div>
+        </div>
+        <div class="task" data-id="" draggable="true">
+            Task3
+            <div class="dot"></div>
+        </div>
+        <div>
+            @foreach(var workflow in Model)
+            {
+                    
+                    <button id="workflow-btn" data-workflow-id="@workflow.Id">@workflow.Id</button>
+            }
+        </div>
+
+
+        <button class="save-btn">Save</button>
+    </div>
+    <div id="droppable-area">
+        <!-- Droppable area for tasks -->
+        <canvas id="canvas"></canvas>
+    </div>
+</body>
+</html>

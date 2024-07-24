@@ -1,0 +1,57 @@
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 100%;
+    background-color: #f0f0f0;
+    border-right: 2px solid #000;
+    overflow-y: auto;
+}
+
+.task {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #000;
+    background-color: lightgray;
+    cursor: move;
+    margin: 10px;
+    position: relative;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    border-radius: 50%;
+    position: absolute;
+    top: 90%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+#droppable-area {
+    position: absolute;
+    top: 0;
+    left: 150px;
+    width: calc(100% - 150px);
+    height: 100%;
+    border: 2px solid #000;
+    overflow: hidden;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none;
+}
