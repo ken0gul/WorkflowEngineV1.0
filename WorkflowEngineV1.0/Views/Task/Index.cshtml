@@ -9,6 +9,7 @@
 </head>
 <body>
     <div id="sidebar">
+    <div class="logo">WorkflowEngineV1.0</div>
         <div class="task" data-id="" draggable="true">
             <i class="fa-solid fa-flag-checkered">Start</i>
             <div class="dot"></div>
@@ -22,16 +23,24 @@
             <i class="fa-solid fa-flag" style="display: flex; justify-content: space-between;">Finish</i>
             <div class="dot"></div>
         </div>
+        <div class="task" data-id="" draggable="true">
+            <i class="fa-sharp fa-regular fa-folder-open">Create Doc</i>
+            <div class="dot"></div>
+        </div>
+
+        <div class="buttons-container">
+
         <div>
             @foreach(var workflow in Model)
             {
                     
-                    <button id="workflow-btn" data-workflow-id="@workflow.Id">@workflow.Id</button>
+                    <button id="workflow-btn" data-workflow-id="@workflow.Id">@workflow.WorkflowName</button>
             }
         </div>
 
 
-        <button class="save-btn">Save</button>
+        <button class="save-btn">Save Workflow</button>
+        </div>
     </div>
     <div id="droppable-area">
         <!-- Droppable area for tasks -->

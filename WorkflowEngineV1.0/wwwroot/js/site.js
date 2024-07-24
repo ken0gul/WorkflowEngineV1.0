@@ -257,7 +257,9 @@ document.querySelectorAll("#workflow-btn").forEach(btn => {
         content.querySelectorAll('.task').forEach(tEl => {
             content.removeChild(tEl)
         })
-        loadWorkflow(e.target.innerText)
+        console.log()
+        const dataId = e.target.getAttribute("data-workflow-id");
+        loadWorkflow(dataId)
     });
 })
 
