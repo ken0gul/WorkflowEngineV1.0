@@ -55,3 +55,21 @@ canvas {
     z-index: 1;
     pointer-events: none;
 }
+
+.task {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    display: flex;
+    justify-content: space-around;
+}
+
+    .task .icon {
+        margin-right: 10px;
+    }
+
+    .task .dot {
+        margin-left: auto;
+    }

@@ -85,6 +85,11 @@ namespace WorkflowEngineV1._0.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "y");
 
+                    b.Property<string>("iconHTML")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "iconHtml");
+
                     b.HasKey("Id");
 
                     b.HasIndex("WorkflowId");
@@ -92,43 +97,6 @@ namespace WorkflowEngineV1._0.Migrations
                     b.ToTable("TaskItems");
 
                     b.HasAnnotation("Relational:JsonPropertyName", "tasks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Task 1",
-                            X = 100,
-                            Y = 100
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Task 2",
-                            X = 300,
-                            Y = 100
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Task 3",
-                            X = 100,
-                            Y = 300
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Task 4",
-                            X = 300,
-                            Y = 300
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Task 5",
-                            X = 200,
-                            Y = 500
-                        });
                 });
 
             modelBuilder.Entity("WorkflowEngineV1._0.Models.Workflow", b =>

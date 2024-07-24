@@ -2,8 +2,6 @@
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace WorkflowEngineV1._0.Migrations
 {
     /// <inheritdoc />
@@ -57,6 +55,7 @@ namespace WorkflowEngineV1._0.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     X = table.Column<int>(type: "int", nullable: false),
                     Y = table.Column<int>(type: "int", nullable: false),
+                    iconHTML = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WorkflowId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -67,18 +66,6 @@ namespace WorkflowEngineV1._0.Migrations
                         column: x => x.WorkflowId,
                         principalTable: "Workflows",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.InsertData(
-                table: "TaskItems",
-                columns: new[] { "Id", "Name", "WorkflowId", "X", "Y" },
-                values: new object[,]
-                {
-                    { 1, "Task 1", null, 100, 100 },
-                    { 2, "Task 2", null, 300, 100 },
-                    { 3, "Task 3", null, 100, 300 },
-                    { 4, "Task 4", null, 300, 300 },
-                    { 5, "Task 5", null, 200, 500 }
                 });
 
             migrationBuilder.CreateIndex(

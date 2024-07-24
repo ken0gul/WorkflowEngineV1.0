@@ -19,6 +19,8 @@ namespace WorkflowEngineV1._0.Models
         [JsonPropertyName("y")]
         public int Y { get; set; }
 
+        [JsonPropertyName("iconHtml")]
+        public string iconHTML { get; set; }
 
         [JsonIgnore]
         public int? WorkflowId { get; set; } // Foreign Key to Workflow

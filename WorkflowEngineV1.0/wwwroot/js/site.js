@@ -194,10 +194,12 @@ document.querySelector(".save-btn").addEventListener('click', saveWorkflow)
 async function saveWorkflow() {
     // Filter tasks that are in the droppable area
     const droppableTasks = Array.from(content.querySelectorAll('.task')).map(task => {
-        return  {
+        console.log(task.innerHTML)
+        return {
             id: task.getAttribute('data-id'),
-            name: task.innerText.split('\n')[0],
-         
+             name: task.innerText.split('\n')[0],
+            iconHtml: task.innerHTML,
+            
                     x: parseFloat(task.style.left),
                         y: parseFloat(task.style.top)
         }
@@ -209,14 +211,14 @@ async function saveWorkflow() {
         droppableTaskIds.includes(conn.startTaskId) && droppableTaskIds.includes(conn.endTaskId)
     );
 
-    console.log(workflowNameFromDb)
     const workflow = {
         workflowName: workflowNameFromDb ?? `Workflow-${generateRandomId()}`,
         tasks: droppableTasks.map(task => ({
             
             name: task.name,
             x: task.x,
-            y: task.y
+            y: task.y,
+            iconHtml: task.iconHtml
         })),
         connections: filteredConnections.map(fc => ({
             startTaskId: fc.startTaskId,
@@ -271,6 +273,7 @@ async function loadWorkflow(id) {
         });
 
         workflow.connections.forEach(conn => {
+            console.log(conn)
             startTask = document.querySelector(`.task[data-id="${conn.startTaskId}"]`);
              endTask = document.querySelector(`.task[data-id="${conn.endTaskId}"]`);
             if (startTask && endTask) {
@@ -279,13 +282,14 @@ async function loadWorkflow(id) {
              
             }
         });
-        //drawConnections();
+        drawConnections();
 
     } catch (error) {
         console.error('Error loading workflow:', error);
     }
 }
 function createDroppableTaskElement(taskItem) {
+
     const taskElement = document.createElement('div');
     taskElement.classList.add('task');
     taskElement.setAttribute('data-id', taskItem.name);
@@ -293,7 +297,7 @@ function createDroppableTaskElement(taskItem) {
     taskElement.style.position = 'absolute';
     taskElement.style.left = `${taskItem.x}px`;
     taskElement.style.top = `${taskItem.y}px`;
-    taskElement.innerHTML = `${taskItem.name}<div class="dot"></div>`;
+    taskElement.innerHTML = `${taskItem.iconHtml}`
     taskElement.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', null); // For Firefox
         currentDraggedTask = taskElement;
@@ -301,7 +305,6 @@ function createDroppableTaskElement(taskItem) {
     });
     taskElement.addEventListener('dragend', (e) => {
         e.target.classList.remove('dragging');
-        updateTaskPosition(taskElement);
     });
     content.appendChild(taskElement);
 

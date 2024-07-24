@@ -39,7 +39,8 @@ namespace WorkflowEngineV1._0.Controllers
                     Id = t.Id, // Make sure to set Id properly if you're reusing TaskItem objects
                     Name = t.Name,
                     X = t.X,
-                    Y = t.Y
+                    Y = t.Y,
+                    iconHTML = t.iconHTML
                 }).ToList();
 
                 foundWorkflow.Connections = workflowDto.Connections.Select(c => new Connection
@@ -63,14 +64,16 @@ namespace WorkflowEngineV1._0.Controllers
                         Id = t.Id,
                         Name = t.Name,
                         X = t.X,
-                        Y = t.Y
+                        Y = t.Y,
+                        iconHTML = t.iconHTML
                     }).ToList(),
                     Connections = workflowDto.Connections.Select(c => new Connection
                     {
                         StartTaskId = c.StartTaskId,
                         EndTaskId = c.EndTaskId,
                         XLoc = c.XLoc,
-                        YLoc = c.YLoc
+                        YLoc = c.YLoc,
+
                     }).ToList()
                 };
 
