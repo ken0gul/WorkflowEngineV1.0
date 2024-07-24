@@ -2,7 +2,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 150px;
+    width: 220px;
     height: 100%;
     padding: 10px;
     background-color: #f0f0f0;
@@ -20,7 +20,7 @@
     position: relative;
     border-radius: 10px;
  
-    text-align: center;
+    text-align: left;
     padding: 10px;
     box-sizing: border-box;
 }
@@ -52,7 +52,6 @@
     left: 150px;
     width: calc(100% - 150px);
     height: 100%;
-    border: 2px solid #000;
     overflow: hidden;
 }
 
@@ -133,10 +132,32 @@ canvas {
     justify-content: center;
     padding: 20px;
     background-color: #e0e0e0;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    overflow-y: auto;
+    border: 2px dashed #3498db;
+    border-radius: 8px;
+    margin: 20px;
+    transition: background-color 0.3s ease;
+    position: relative;
 }
+
+    .droppable-area p {
+        font-size: 18px;
+        color: #3498db;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    .droppable-area:hover {
+        background-color: #d0d0d0;
+    }
+
+    .droppable-area.dragging-over {
+        background-color: #c0e0ff;
+        border-color: #2980b9;
+    }
 
 .task {
     display: flex;
@@ -175,6 +196,9 @@ canvas {
     transition: background-color 0.3s;
 }
 
-    .save-button:hover {
+    .save-btn:hover {
         background-color: #27ae60;
     }
+  #workflow-btn {
+      width: 100%;
+  }
