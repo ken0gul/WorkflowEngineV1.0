@@ -18,5 +18,7 @@ namespace WorkflowEngineV1._0.Models
 
         [JsonPropertyName("connections")]
         public List<Connection> Connections { get; set; }
+
+        public TaskState State { get; set; }
     }
 }

@@ -165,12 +165,14 @@ canvas {
     justify-content: space-between;
     width: 100%;
     max-width: 300px;
-    margin: 10px 0;
-    padding: 10px;
     background-color: #ffffff;
-    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
     .task i {
@@ -202,3 +204,25 @@ canvas {
   #workflow-btn {
       width: 100%;
   }
+
+
+/*START WORKFLOW*/
+
+.start-btn {
+    z-index:200;
+}
+
+
+/* STATE UPDATES*/
+.task.preparing {
+    background-color: #f0f0f0;
+}
+
+.task.working {
+    background-color: #ffeb3b; /* Yellow */
+}
+
+.task.completed {
+    background-color: #4caf50; /* Green */
+    color: white;
+}

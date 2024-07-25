@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WorkflowEngineV1._0.Data;
+using WorkflowEngineV1._0.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Add WorkflowServices to DI Container
+
+builder.Services.AddTransient<WorkflowService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

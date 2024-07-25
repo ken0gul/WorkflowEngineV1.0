@@ -27,5 +27,26 @@ namespace WorkflowEngineV1._0.Models
 
         [JsonIgnore]
         public Workflow? Workflow { get; set; } // Navigation property to Workflow
+
+
+        public TaskType Type { get; set; }
+        public TaskState State { get; set; }
+    }
+
+    public enum TaskType 
+    {
+        Start,
+        SendEmail,
+        ScheduleMeeting,
+        CreateDoc,
+        Finish
+    
+    }
+
+    public enum TaskState
+    {
+        Preparing,
+        Working,
+        Completed
     }
 }

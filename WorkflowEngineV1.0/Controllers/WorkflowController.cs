@@ -2,6 +2,7 @@
 using WorkflowEngineV1._0.Data;
 using WorkflowEngineV1._0.Models;
 using Microsoft.EntityFrameworkCore;
+using WorkflowEngineV1._0.Services;
 
 namespace WorkflowEngineV1._0.Controllers
 {
@@ -11,9 +12,12 @@ namespace WorkflowEngineV1._0.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public WorkflowController(ApplicationDbContext context)
+        private readonly WorkflowService _workflowService;
+
+        public WorkflowController(ApplicationDbContext context, WorkflowService workflowService)
         {
             _context = context;
+            _workflowService = workflowService;
         }
         [HttpPost("saveWorkflow")]
         public async Task<IActionResult> SaveWorkflow([FromBody] Workflow workflowDto)
@@ -100,6 +104,38 @@ namespace WorkflowEngineV1._0.Controllers
             }
 
             return Ok(workflow);
+        }
+
+        [HttpPost("start/{workflowId}")]
+        public async Task<IActionResult> StartWorkflow(int workflowId)
+        {
+            try
+            {
+                await _workflowService.ExecuteWorkflow(workflowId);
+                return Ok();
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("getStates/{workflowId}")]
+        public async Task<IActionResult> GetTaskState(int workflowId)
+        {
+            var workflow = await _context.Workflows
+                     .Include(w => w.Tasks)
+                     .FirstOrDefaultAsync(w => w.Id == workflowId);
+            if (workflow == null)
+                return NotFound();
+
+            var taskStates = workflow.Tasks.Select(t => new
+            {
+                t.Id,
+                State = t.State.ToString(),
+                t.Name
+            }).ToList();
+
+            return Ok(taskStates);
         }
     }
 
