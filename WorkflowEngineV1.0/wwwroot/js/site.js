@@ -348,8 +348,11 @@ function updateWorkflowStatesUI(workflows) {
                              workflowEl.classList.remove('preparing', 'working', 'completed');
                              workflowEl.classList.add('completed');
                              break;
-
-
+                           
+                         case 1:
+                             workflowEl.classList.remove('preparing', 'working', 'completed');
+                             workflowEl.classList.add('working');
+                             break;
                          default:
                              workflowEl.classList.remove('preparing', 'working', 'completed');
                              break;

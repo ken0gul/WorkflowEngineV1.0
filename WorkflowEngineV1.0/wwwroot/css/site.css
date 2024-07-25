@@ -81,10 +81,14 @@ canvas {
         margin-left: auto;
     }
 
-    .buttons-container {
+    .buttons {
         display: flex;
         flex-direction: column;
         gap: 10px;
+        height: 250px;
+        overflow-y: scroll;
+        margin-bottom: 50px;
+        padding:10px;
     }
 
     .save-btn {
@@ -209,7 +213,16 @@ canvas {
 /*START WORKFLOW*/
 
 .start-btn {
-    z-index:200;
+    width: 100%;
+    padding: 10px;
+    background-color: #BB3011;
+    color: white;
+    border: none;
+    border-radius: 0 0 12px 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
 }
 
 
@@ -231,4 +244,9 @@ canvas {
 #workflow-btn.completed {
     background-color: #4caf50; /* Green */
     color: white;
+}
+
+#workflow-btn.working {
+    background-color: #ffeb3b; /* Yellow */
+
 }

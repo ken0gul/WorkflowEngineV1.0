@@ -36,7 +36,15 @@ namespace WorkflowEngineV1._0.Services
                     await ExecuteTask(task);
                 }
             }
+            var anyUnfinishedTask = workflow.Tasks.Any(task => task.State == TaskState.Working);
+            if (anyUnfinishedTask)
+            {
+                workflow.State = TaskState.Working;
+            } else
+            {
+
             workflow.State = TaskState.Completed;
+            }
 
             await _context.SaveChangesAsync();
 
@@ -47,7 +55,7 @@ namespace WorkflowEngineV1._0.Services
             // Simulate task execution
             await Task.Delay(1000);
 
-            task.State = TaskState.Completed;
+            task.State = TaskState.Working;
             await _context.SaveChangesAsync();
 
             var connections = _context.Connections
