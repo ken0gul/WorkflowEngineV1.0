@@ -137,6 +137,19 @@ namespace WorkflowEngineV1._0.Controllers
 
             return Ok(taskStates);
         }
+
+
+        [HttpGet("getWorkflowStates")]
+        public async Task<IActionResult> GetWorkflowStates()
+        {
+            var workflows = await _context.Workflows
+             .ToListAsync();
+            if (workflows == null)
+            {
+                return NotFound();
+            }
+            return Ok(workflows);
+        }
     }
 
  

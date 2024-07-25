@@ -226,3 +226,9 @@ canvas {
     background-color: #4caf50; /* Green */
     color: white;
 }
+
+
+#workflow-btn.completed {
+    background-color: #4caf50; /* Green */
+    color: white;
+}

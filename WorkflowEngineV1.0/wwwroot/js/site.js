@@ -11,9 +11,11 @@ let workflowNameFromDb = null;
 let workflowId = null;
 
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async() => {
     workflowNameFromDb = null;
-  
+    var workflows = await getWorkflowStates();
+    console.log(workflows)
+    updateWorkflowStatesUI(workflows)
 })
 
 // Set canvas size
@@ -261,6 +263,8 @@ document.querySelectorAll("#workflow-btn").forEach(btn => {
         const dataId = e.target.getAttribute("data-workflow-id");
         loadWorkflow(dataId)
         workflowId = dataId;
+        pollTaskStates(workflowId);
+
     });
 })
 
@@ -297,7 +301,7 @@ async function pollTaskStates(workflowId) {
         if (response.ok) {
             const taskStates = await response.json();
             console.log(taskStates)
-            updateTaskStatesUI(taskStates);
+            updateTaskStatesUI(taskStates, workflowId);
         }
     } catch (error) {
         console.error('Error polling task states:', error);
@@ -307,9 +311,22 @@ async function pollTaskStates(workflowId) {
     setTimeout(() => pollTaskStates(workflowId), 2000);
 }
 
+async function getWorkflowStates() {
+    try {
+        const response = await fetch("/api/Workflow/getWorkflowStates");
+        if (response.ok) {
+            const workflowStates = await response.json();
+            return workflowStates;
+        }
+    } catch (err) {
+        console.error("Error polling workflow states:", err);
+    }
+}
+
 // Update UI based on task states
-function updateTaskStatesUI(taskStates) {
+function updateTaskStatesUI(taskStates, wfId) {
     console.log(taskStates)
+    if (wfId !== workflowId) return;
     taskStates.forEach(task => {
         const taskElement = document.querySelector(`.task[data-id="${task.name}"]`);
         if (taskElement) {
@@ -318,6 +335,34 @@ function updateTaskStatesUI(taskStates) {
         }
     });
 }
+
+// Update UI based on workflows' states
+function updateWorkflowStatesUI(workflows) {
+  
+    workflows.forEach(w => {
+        const workflowEl = document.querySelector(`[data-workflow-name=${w.workflowName}]`)
+                 if (w) {
+                     switch (w.state) {
+                         case 2:
+                            
+                             workflowEl.classList.remove('preparing', 'working', 'completed');
+                             workflowEl.classList.add('completed');
+                             break;
+
+
+                         default:
+                             workflowEl.classList.remove('preparing', 'working', 'completed');
+                             break;
+
+
+                     }
+
+
+                 }
+             })
+           
+      
+    };
 async function loadWorkflow(id) {
     try {
         const response = await fetch(`/api/Workflow/${id}`);

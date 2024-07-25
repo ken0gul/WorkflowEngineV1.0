@@ -38,7 +38,7 @@
             @foreach(var workflow in Model)
             {
                     
-                    <button id="workflow-btn" data-workflow-id="@workflow.Id">@workflow.WorkflowName</button>
+                    <button id="workflow-btn" data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName">@workflow.WorkflowName</button>
             }
         </div>
 
