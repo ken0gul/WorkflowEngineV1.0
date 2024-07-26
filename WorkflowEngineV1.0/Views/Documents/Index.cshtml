@@ -1,0 +1,70 @@
+﻿@model IEnumerable<WorkflowEngineV1._0.Models.Document>
+
+@{
+    ViewData["Title"] = "Documents List";
+    var documentWorkflows = ViewBag.DocumentWorkflows as List<DocumentWorkflowViewModel>;
+}
+
+<h1>Documents List</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Author</th>
+            <th>Workflow State</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var documentWorkflow in documentWorkflows)
+        {
+            var document = documentWorkflow.Document;
+            var workflow = documentWorkflow.Workflow;
+
+            <tr>
+                <td>@document.Name</td>
+                <td>@document.Description</td>
+                <td>@document.Author</td>
+                <td>@workflow.State</td>
+                <td>
+                    @if (workflow.State == TaskState.Preparing)
+                    {
+                        <button onclick="approveDocument('@document.Id')" class="btn btn-success">Approve</button>
+                    }
+                    @if (workflow.State == TaskState.Working)
+                    {
+                        <button onclick="publishDocument('@document.Id')" class="btn btn-primary">Publish</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        async function approveDocument(documentId) {
+            const response = await fetch(`/api/DocumentsApi/approveDocument/${documentId}`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error('Error approving document:', response);
+            }
+        }
+
+        async function publishDocument(documentId) {
+            const response = await fetch(`/api/DocumentsApi/publishDocument/${documentId}`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error('Error publishing document:', response);
+            }
+        }
+    </script>
+}

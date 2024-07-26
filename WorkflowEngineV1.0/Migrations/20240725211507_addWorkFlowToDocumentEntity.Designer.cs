@@ -12,8 +12,8 @@ using WorkflowEngineV1._0.Data;
 namespace WorkflowEngineV1._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240725112046_addWorkflowStateToDb")]
-    partial class addWorkflowStateToDb
+    [Migration("20240725211507_addWorkFlowToDocumentEntity")]
+    partial class addWorkFlowToDocumentEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,40 @@ namespace WorkflowEngineV1._0.Migrations
                     b.ToTable("Connections");
 
                     b.HasAnnotation("Relational:JsonPropertyName", "connections");
+                });
+
+            modelBuilder.Entity("WorkflowEngineV1._0.Models.Document", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WorkflowId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowId");
+
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("WorkflowEngineV1._0.Models.TaskItem", b =>
@@ -116,6 +150,9 @@ namespace WorkflowEngineV1._0.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<Guid?>("DocumentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("State")
                         .HasColumnType("int");
 
@@ -125,6 +162,8 @@ namespace WorkflowEngineV1._0.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "workflowName");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
 
                     b.ToTable("Workflows");
                 });
@@ -140,6 +179,17 @@ namespace WorkflowEngineV1._0.Migrations
                     b.Navigation("Workflow");
                 });
 
+            modelBuilder.Entity("WorkflowEngineV1._0.Models.Document", b =>
+                {
+                    b.HasOne("WorkflowEngineV1._0.Models.Workflow", "Workflow")
+                        .WithMany()
+                        .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Workflow");
+                });
+
             modelBuilder.Entity("WorkflowEngineV1._0.Models.TaskItem", b =>
                 {
                     b.HasOne("WorkflowEngineV1._0.Models.Workflow", "Workflow")
@@ -147,6 +197,16 @@ namespace WorkflowEngineV1._0.Migrations
                         .HasForeignKey("WorkflowId");
 
                     b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("WorkflowEngineV1._0.Models.Workflow", b =>
+                {
+                    b.HasOne("WorkflowEngineV1._0.Models.Document", "Document")
+                        .WithMany()
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("WorkflowEngineV1._0.Models.Workflow", b =>

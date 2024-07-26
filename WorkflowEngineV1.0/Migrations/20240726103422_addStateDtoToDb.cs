@@ -5,25 +5,25 @@
 namespace WorkflowEngineV1._0.Migrations
 {
     /// <inheritdoc />
-    public partial class addWorkflowStateToDb : Migration
+    public partial class addStateDtoToDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "State",
-                table: "Workflows",
-                type: "int",
+            migrationBuilder.AddColumn<string>(
+                name: "StateDTO",
+                table: "TaskItems",
+                type: "nvarchar(max)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "State",
-                table: "Workflows");
+                name: "StateDTO",
+                table: "TaskItems");
         }
     }
 }

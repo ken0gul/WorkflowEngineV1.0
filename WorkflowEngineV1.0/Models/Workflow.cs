@@ -20,5 +20,11 @@ namespace WorkflowEngineV1._0.Models
         public List<Connection> Connections { get; set; }
 
         public TaskState State { get; set; }
+
+        [JsonIgnore]
+
+        public Guid? DocumentId { get; set; }
+        [JsonIgnore]
+        public Document? Document { get; set; }
     }
 }

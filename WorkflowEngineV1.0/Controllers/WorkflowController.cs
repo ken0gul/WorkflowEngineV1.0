@@ -26,7 +26,7 @@ namespace WorkflowEngineV1._0.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            Console.WriteLine(workflowDto);
             Workflow foundWorkflow = await _context.Workflows
                 .Include(w => w.Tasks)
                 .Include(w => w.Connections)
@@ -44,7 +44,15 @@ namespace WorkflowEngineV1._0.Controllers
                     Name = t.Name,
                     X = t.X,
                     Y = t.Y,
-                    iconHTML = t.iconHTML
+                    iconHTML = t.iconHTML,
+                    StateDTO = t.StateDTO,
+                    State = t.StateDTO switch
+                    {
+                        "Preparing" => TaskState.Preparing,
+                        "Working" => TaskState.Working,
+                        "Completed" => TaskState.Completed,
+                        _ => throw new ArgumentException($"Invalid state: {t.StateDTO}")
+                    }
                 }).ToList();
 
                 foundWorkflow.Connections = workflowDto.Connections.Select(c => new Connection

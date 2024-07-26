@@ -8,33 +8,29 @@ namespace WorkflowEngineV1._0.Data
         public DbSet<TaskItem> TaskItems { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Workflow> Workflows { get; set; }
+        public DbSet<Document> Documents { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-         //   modelBuilder.Entity<Workflow>()
-         //.HasMany(w => w.Tasks)
-         //.WithOne(t => t.Workflow)
-         //.HasForeignKey(t => t.WorkflowId)
-         //.OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Workflow>()
+       .HasKey(w => w.Id);
 
-         //   modelBuilder.Entity<Workflow>()
-         //       .HasMany(w => w.Connections)
-         //       .WithOne(c => c.Workflow)
-         //       .HasForeignKey(c => c.WorkflowId)
-         //       .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Document>()
+                .HasKey(d => d.Id);
 
-         //   modelBuilder.Entity<Connection>()
-         //       .HasOne(c => c.StartTask)
-         //       .WithMany()
-         //       .HasForeignKey(c => c.StartTaskId)
-         //       .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Document>()
+                .HasOne(d => d.Workflow)
+                .WithMany() // Adjust if Workflow has navigation property for Documents
+                .HasForeignKey(d => d.WorkflowId)
+                .OnDelete(DeleteBehavior.NoAction); // Use Restrict instead of Cascade
 
-         //   modelBuilder.Entity<Connection>()
-         //       .HasOne(c => c.EndTask)
-         //       .WithMany()
-         //       .HasForeignKey(c => c.EndTaskId)
-         //       .OnDelete(DeleteBehavior.Restrict);
+            // Ensure that Workflow does not have conflicting cascade paths
+            modelBuilder.Entity<Workflow>()
+                .HasOne(w => w.Document) // Assuming a Document navigation property in Workflow
+                .WithMany()
+                .HasForeignKey(w => w.DocumentId)
+                .OnDelete(DeleteBehavior.NoAction); // Use Restrict instead of Cascade
             SeedData(modelBuilder);
         }
 

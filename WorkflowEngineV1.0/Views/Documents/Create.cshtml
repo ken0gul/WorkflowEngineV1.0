@@ -1,0 +1,65 @@
+﻿@model WorkflowEngineV1._0.Models.Document
+
+@{
+    ViewData["Title"] = "Create Document";
+}
+
+<h1>Create Document</h1>
+<form id="createDocumentForm">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" id="Name" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control" id="Description"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Author"></label>
+        <input asp-for="Author" class="form-control" id="Author" />
+    </div>
+    <div class="form-group">
+        <label asp-for="WorkflowId"></label>
+        <select asp-for="WorkflowId" class="form-control" id="WorkflowId">
+            @foreach (var workflow in ViewBag.Workflows)
+            {
+                <option value="@workflow.Id">@workflow.WorkflowName</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+@section Scripts {
+    <script>
+        document.getElementById('createDocumentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const documentData = {
+                Name: document.getElementById('Name').value,
+                Description: document.getElementById('Description').value,
+                Author: document.getElementById('Author').value,
+                WorkflowId: document.getElementById('WorkflowId').value
+            };
+
+            try {
+                const response = await fetch('/api/DocumentsApi/createDocument', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(documentData)
+                });
+
+                if (response.ok) {
+                    alert('Document created successfully.');
+                    window.location.href = '/Documents'; // Redirect to the document list page
+                } else {
+                    const errorText = await response.text();
+                    alert('Error creating document: ' + errorText);
+                }
+            } catch (error) {
+                alert('Error: ' + error);
+            }
+        });
+    </script>
+}

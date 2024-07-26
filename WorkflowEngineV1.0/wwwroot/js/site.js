@@ -197,7 +197,6 @@ document.querySelector(".save-btn").addEventListener('click', saveWorkflow)
 async function saveWorkflow() {
     // Filter tasks that are in the droppable area
     const droppableTasks = Array.from(content.querySelectorAll('.task')).map(task => {
-        console.log(task.innerHTML)
         return {
             id: task.getAttribute('data-id'),
              name: task.innerText.split('\n')[0],
@@ -208,20 +207,25 @@ async function saveWorkflow() {
         }
     });
 
+
     // Collect only connections related to droppable tasks
     const droppableTaskIds = droppableTasks.map(task => task.id);
     const filteredConnections = connections.filter(conn =>
         droppableTaskIds.includes(conn.startTaskId) && droppableTaskIds.includes(conn.endTaskId)
     );
+    const taskStates = await pollTaskStates(workflowId);
+
+    if (taskStates != null) {
 
     const workflow = {
         workflowName: workflowNameFromDb ?? `Workflow-${generateRandomId()}`,
-        tasks: droppableTasks.map(task => ({
+        tasks: droppableTasks.map((task, i) => ({
             
             name: task.name,
             x: task.x,
             y: task.y,
-            iconHtml: task.iconHtml
+            iconHtml: task.iconHtml,
+            stateDTO: taskStates[i].state
         })),
         connections: filteredConnections.map(fc => ({
             startTaskId: fc.startTaskId,
@@ -251,6 +255,7 @@ async function saveWorkflow() {
         }
     } catch (error) {
         console.error('Error:', error);
+    }
     }
 }
 
@@ -300,8 +305,8 @@ async function pollTaskStates(workflowId) {
         const response = await fetch(`/api/Workflow/getStates/${workflowId}`);
         if (response.ok) {
             const taskStates = await response.json();
-            console.log(taskStates)
             updateTaskStatesUI(taskStates, workflowId);
+            return taskStates;
         }
     } catch (error) {
         console.error('Error polling task states:', error);
@@ -325,10 +330,15 @@ async function getWorkflowStates() {
 
 // Update UI based on task states
 function updateTaskStatesUI(taskStates, wfId) {
-    console.log(taskStates)
     if (wfId !== workflowId) return;
+
+    console.log(taskStates)
+    console.log(wfId)
+    console.log(workflowId)
+
     taskStates.forEach(task => {
         const taskElement = document.querySelector(`.task[data-id="${task.name}"]`);
+        console.log(task.name)
         if (taskElement) {
             taskElement.classList.remove('preparing', 'working', 'completed');
             taskElement.classList.add(task.state.toLowerCase());
@@ -371,12 +381,14 @@ async function loadWorkflow(id) {
         const response = await fetch(`/api/Workflow/${id}`);
         const workflow = await response.json();
         workflowNameFromDb = workflow.workflowName;
+        const taskStates = await pollTaskStates(id);
+       
+        
         workflow.tasks.forEach(task => {
             createDroppableTaskElement(task);
-            
 
         });
-
+        updateTaskStatesUI(taskStates, id)
         workflow.connections.forEach(conn => {
             console.log(conn)
             startTask = document.querySelector(`.task[data-id="${conn.startTaskId}"]`);

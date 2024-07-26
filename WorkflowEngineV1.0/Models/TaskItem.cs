@@ -31,6 +31,8 @@ namespace WorkflowEngineV1._0.Models
 
         public TaskType Type { get; set; }
         public TaskState State { get; set; }
+
+        public string? StateDTO { get; set; }
     }
 
     public enum TaskType 
