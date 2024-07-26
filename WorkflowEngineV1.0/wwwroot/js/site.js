@@ -195,6 +195,9 @@ function addConnection(startTask, endTask, x, y) {
 
 document.querySelector(".save-btn").addEventListener('click', saveWorkflow)
 async function saveWorkflow() {
+
+
+
     // Filter tasks that are in the droppable area
     const droppableTasks = Array.from(content.querySelectorAll('.task')).map(task => {
         return {
@@ -213,9 +216,15 @@ async function saveWorkflow() {
     const filteredConnections = connections.filter(conn =>
         droppableTaskIds.includes(conn.startTaskId) && droppableTaskIds.includes(conn.endTaskId)
     );
-    const taskStates = await pollTaskStates(workflowId);
 
-    if (taskStates != null) {
+    //if (workflowId == null) {
+    //    taskStates = {
+    //        id: '1',
+    //        state: 'preparing'
+    //    }
+    //}
+    var taskStates = await pollTaskStates(workflowId);
+   
 
     const workflow = {
         workflowName: workflowNameFromDb ?? `Workflow-${generateRandomId()}`,
@@ -225,7 +234,7 @@ async function saveWorkflow() {
             x: task.x,
             y: task.y,
             iconHtml: task.iconHtml,
-            stateDTO: taskStates[i].state
+            stateDTO: taskStates ? taskStates[i]?.state : 'preparing'
         })),
         connections: filteredConnections.map(fc => ({
             startTaskId: fc.startTaskId,
@@ -255,7 +264,6 @@ async function saveWorkflow() {
         }
     } catch (error) {
         console.error('Error:', error);
-    }
     }
 }
 
@@ -301,6 +309,7 @@ async function startWorkflow(workflowId) {
 
 // Polling task states to update UI
 async function pollTaskStates(workflowId) {
+    if (workflowId == null) return null;
     try {
         const response = await fetch(`/api/Workflow/getStates/${workflowId}`);
         if (response.ok) {

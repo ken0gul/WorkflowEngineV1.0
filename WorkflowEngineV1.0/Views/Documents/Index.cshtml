@@ -37,6 +37,10 @@
                     {
                         <button onclick="publishDocument('@document.Id')" class="btn btn-primary">Publish</button>
                     }
+                    @if (workflow.State == TaskState.Completed)
+                    {
+                        <span class="published-label">Published</span>
+                    }
                 </td>
             </tr>
         }

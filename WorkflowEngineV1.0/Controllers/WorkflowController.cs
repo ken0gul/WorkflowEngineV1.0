@@ -51,7 +51,7 @@ namespace WorkflowEngineV1._0.Controllers
                         "Preparing" => TaskState.Preparing,
                         "Working" => TaskState.Working,
                         "Completed" => TaskState.Completed,
-                        _ => throw new ArgumentException($"Invalid state: {t.StateDTO}")
+                        _ => TaskState.Preparing
                     }
                 }).ToList();
 

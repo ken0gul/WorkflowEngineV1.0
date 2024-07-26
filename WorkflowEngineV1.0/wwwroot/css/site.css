@@ -193,22 +193,39 @@ canvas {
 .save-btn {
     width: 100%;
     padding: 10px;
-    background-color: #2ecc71;
+    background-color: green;
     color: white;
     border: none;
     border-radius: 0 0 12px 12px;
     font-size: 18px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-    .save-btn:hover {
-        background-color: #27ae60;
-    }
-  #workflow-btn {
-      width: 100%;
-  }
+.save-btn:hover {
+    background-color: forestgreen;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
 
+.save-btn:active {
+    background-color: darkgreen;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(1px);
+}
+
+#workflow-btn {
+    width: 100%;
+    border-radius: 20px;
+    padding: 8px 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+}
+    #workflow-btn:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
 
 /*START WORKFLOW*/
 
@@ -221,9 +238,22 @@ canvas {
     border-radius: 0 0 12px 12px;
     font-size: 18px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
     font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+    .start-btn:hover {
+        background-color: #A5290E;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .start-btn:active {
+        background-color: #93200D;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transform: translateY(1px);
+    }
 
 
 /* STATE UPDATES*/
@@ -249,4 +279,14 @@ canvas {
 #workflow-btn.working {
     background-color: #ffeb3b; /* Yellow */
 
+}
+
+.published-label {
+    font-weight: bold;
+    color: green;
+    font-size: 1.2em;
+    padding: 5px;
+    border: 1px solid green;
+    border-radius: 5px;
+    background-color: #eaffea;
 }
