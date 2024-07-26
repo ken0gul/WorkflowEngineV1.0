@@ -191,13 +191,13 @@ canvas {
     }
 
 .save-btn {
-    width: 100%;
+    width: 50%;
     padding: 10px;
     background-color: green;
     color: white;
     border: none;
-    border-radius: 0 0 12px 12px;
-    font-size: 18px;
+    border-radius: 12px;
+    font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
     font-weight: bold;
@@ -230,13 +230,13 @@ canvas {
 /*START WORKFLOW*/
 
 .start-btn {
-    width: 100%;
+    width: 50%;
     padding: 10px;
     background-color: #BB3011;
     color: white;
     border: none;
-    border-radius: 0 0 12px 12px;
-    font-size: 18px;
+    border-radius: 12px;
+    font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
     font-weight: bold;
@@ -278,7 +278,12 @@ canvas {
 
 #workflow-btn.working {
     background-color: #ffeb3b; /* Yellow */
+}
 
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
 }
 
 .published-label {
