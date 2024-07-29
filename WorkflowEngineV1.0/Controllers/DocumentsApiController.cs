@@ -89,7 +89,6 @@ namespace WorkflowEngineV1._0.Controllers
                 {
                     if (task.Name == "Start" || task.Name == "Create Doc")
                     {
-
                     task.State = TaskState.Preparing;
                     }
                 }
@@ -125,6 +124,7 @@ namespace WorkflowEngineV1._0.Controllers
                 if (task.Name == "Start" || task.Name == "Create Doc")
                 {
                     task.State = TaskState.Completed;
+                    document.isPublished = true;
                 }
             }
 
@@ -151,14 +151,27 @@ namespace WorkflowEngineV1._0.Controllers
             {
                 finishTask.State = TaskState.Completed;
             }
-
+            foreach (var task in workflow.Tasks)
+            {
+                if (task.Name == "Send E-mail")
+                {
+                    task.State = TaskState.Working;
+                    SendEmail();
+                    task.State = TaskState.Completed;
+                }
+            }
             workflow.State = TaskState.Completed;
 
             await _context.SaveChangesAsync();
             return Ok(document);
         }
 
-
+        private async void SendEmail()
+        {
+            Console.WriteLine("E-Mail is being sent");
+            await Task.Delay(1500);
+            Console.WriteLine("Email is sent");
+        }
         private void ProcessWorkflow(Guid workflowInstanceId)
         {
             // Implement the logic to process the workflow tasks asynchronously

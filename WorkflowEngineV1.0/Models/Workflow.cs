@@ -21,6 +21,10 @@ namespace WorkflowEngineV1._0.Models
 
         public TaskState State { get; set; }
 
+
+        [JsonPropertyName("caption")]
+        public string Caption { get; set; }
+
         [JsonIgnore]
 
         public Guid? DocumentId { get; set; }

@@ -14,7 +14,6 @@ let workflowId = null;
 document.addEventListener("DOMContentLoaded", async() => {
     workflowNameFromDb = null;
     var workflows = await getWorkflowStates();
-    console.log(workflows)
     updateWorkflowStatesUI(workflows)
 })
 
@@ -136,7 +135,6 @@ document.addEventListener('mouseup', (e) => {
 
 function drawConnections(mouseX = null, mouseY = null) {
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
-    console.log(connections)
     connections.forEach(conn => {
         const startDot = conn.start.querySelector('.dot');
         const endDot = conn.end.querySelector('.dot');
@@ -195,7 +193,12 @@ function addConnection(startTask, endTask, x, y) {
 
 document.querySelector(".save-btn").addEventListener('click', saveWorkflow)
 async function saveWorkflow() {
-
+    // select workflow-name-input
+    const inputField = document.getElementById("workflow-name-input");
+    if (inputField.value === "") {
+        alert("Type in the name!")
+        return;
+    } 
 
 
     // Filter tasks that are in the droppable area
@@ -217,17 +220,13 @@ async function saveWorkflow() {
         droppableTaskIds.includes(conn.startTaskId) && droppableTaskIds.includes(conn.endTaskId)
     );
 
-    //if (workflowId == null) {
-    //    taskStates = {
-    //        id: '1',
-    //        state: 'preparing'
-    //    }
-    //}
+
     var taskStates = await pollTaskStates(workflowId);
    
 
     const workflow = {
         workflowName: workflowNameFromDb ?? `Workflow-${generateRandomId()}`,
+        caption: document.getElementById("workflow-name-input").value,
         tasks: droppableTasks.map((task, i) => ({
             
             name: task.name,
@@ -258,6 +257,8 @@ async function saveWorkflow() {
 
         if (response.ok) {
             console.log('Workflow saved successfully.');
+            inputField.value = ''
+            inputField.hidden = true;
         } else {
             const errorText = await response.text();
             console.error('Error saving workflow:', errorText);
@@ -341,13 +342,8 @@ async function getWorkflowStates() {
 function updateTaskStatesUI(taskStates, wfId) {
     if (wfId !== workflowId) return;
 
-    console.log(taskStates)
-    console.log(wfId)
-    console.log(workflowId)
-
     taskStates.forEach(task => {
         const taskElement = document.querySelector(`.task[data-id="${task.name}"]`);
-        console.log(task.name)
         if (taskElement) {
             taskElement.classList.remove('preparing', 'working', 'completed');
             taskElement.classList.add(task.state.toLowerCase());
@@ -392,7 +388,15 @@ async function loadWorkflow(id) {
         workflowNameFromDb = workflow.workflowName;
         const taskStates = await pollTaskStates(id);
        
-        
+
+        const workflowNameInput = document.getElementById("workflow-name-input")
+        if (workflowNameInput) {
+            workflowNameInput.value = workflow?.caption;
+        }
+
+        if (workflowNameInput.value !== '') {
+            workflowNameInput.hidden = true;
+        }
         workflow.tasks.forEach(task => {
             createDroppableTaskElement(task);
 

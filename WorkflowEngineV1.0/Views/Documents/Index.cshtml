@@ -29,7 +29,7 @@
                 <td>@document.Author</td>
                 <td>@workflow.State</td>
                 <td>
-                    @if (workflow.State == TaskState.Preparing)
+                    @if (workflow.State == TaskState.Preparing && !document.isPublished)
                     {
                         <button onclick="approveDocument('@document.Id')" class="btn btn-success">Approve</button>
                     }
@@ -37,7 +37,7 @@
                     {
                         <button onclick="publishDocument('@document.Id')" class="btn btn-primary">Publish</button>
                     }
-                    @if (workflow.State == TaskState.Completed)
+                    @if (workflow.State == TaskState.Completed && document.isPublished)
                     {
                         <span class="published-label">Published</span>
                     }

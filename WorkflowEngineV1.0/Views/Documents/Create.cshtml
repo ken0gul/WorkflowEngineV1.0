@@ -23,7 +23,7 @@
         <select asp-for="WorkflowId" class="form-control" id="WorkflowId">
             @foreach (var workflow in ViewBag.Workflows)
             {
-                <option value="@workflow.Id">@workflow.WorkflowName</option>
+                <option value="@workflow.Id">@workflow.WorkflowName - @workflow.Caption</option>
             }
         </select>
     </div>

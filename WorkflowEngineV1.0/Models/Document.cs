@@ -21,6 +21,9 @@ namespace WorkflowEngineV1._0.Models
             get; set;
         }
 
+        public bool isPublished { get; set; }
+
+
         public int WorkflowId { get; set; }  // Add this property
         [JsonIgnore]
         public Workflow? Workflow { get; set; }

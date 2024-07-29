@@ -71,6 +71,7 @@ namespace WorkflowEngineV1._0.Controllers
                 var workflow = new Workflow
                 {
                     WorkflowName = workflowDto.WorkflowName,
+                    Caption = workflowDto.Caption,
                     Tasks = workflowDto.Tasks.Select(t => new TaskItem
                     {
                         Id = t.Id,

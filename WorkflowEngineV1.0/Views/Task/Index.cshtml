@@ -37,11 +37,12 @@
         <div class="buttons">
             @foreach(var workflow in Model)
             {
-                    
-                    <button id="workflow-btn" data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName">@workflow.WorkflowName</button>
+
+                    <button id="workflow-btn" data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName"><span hidden>@workflow.WorkflowName</span>@workflow.Caption</button>
             }
         </div>
 
+        <input type="text" id="workflow-name-input" placeholder="Workflow name /"/>
         <div class="action-buttons">
         <button class="save-btn">Save Workflow</button>
         <button class="start-btn">Start Workflow</button>
