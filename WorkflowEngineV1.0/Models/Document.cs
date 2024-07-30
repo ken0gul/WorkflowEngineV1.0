@@ -16,10 +16,7 @@ namespace WorkflowEngineV1._0.Models
         [JsonIgnore]
         public DateTime CreatedDate { get; set; }
         [JsonIgnore]
-        public DateTime UpdatedDate
-        {
-            get; set;
-        }
+        public DateTime UpdatedDate { get; set; }
 
         public bool isPublished { get; set; }
 

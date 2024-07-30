@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WorkflowEngineV1._0.Data;
+using WorkflowEngineV1._0.Engine;
+using WorkflowEngineV1._0.Handlers;
 using WorkflowEngineV1._0.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,33 @@ builder.Services.AddControllersWithViews();
 // DB Config
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Initialize handlers and chain them
+var startHandler = new StartTaskHandler();
+var createDocHandler = new CreateDocTaskHandler();
+var sendEmailHandler = new SendEmailTaskHandler();
+var finishHandler = new FinishTaskHandler();
+
+startHandler.SetNext(createDocHandler);
+createDocHandler.SetNext(sendEmailHandler);
+sendEmailHandler.SetNext(finishHandler);
+
+builder.Services.AddSingleton(startHandler);
+builder.Services.AddSingleton(createDocHandler);
+builder.Services.AddSingleton(sendEmailHandler);
+builder.Services.AddSingleton(finishHandler);
+
+builder.Services.AddTransient<WorkflowEngine>(provider =>
+{
+    var startHandler = provider.GetRequiredService<StartTaskHandler>();
+    var createDocHandler = provider.GetRequiredService<CreateDocTaskHandler>();
+    var sendEmailHandler = provider.GetRequiredService<SendEmailTaskHandler>();
+    var finishHandler = provider.GetRequiredService<FinishTaskHandler>();
+    var context = provider.GetRequiredService<ApplicationDbContext>();
+    var engine = new WorkflowEngine(context);
+    engine.SetFirstHandler(startHandler);
+    return engine;
+});
 
 // Add WorkflowServices to DI Container
 
