@@ -14,6 +14,8 @@ namespace WorkflowEngineV1._0.Handlers
 
         public async Task Handle(TaskItem task, WorkflowEngine engine)
         {
+            Console.WriteLine("Handle() is running for SendEmailTaskHandler)");
+
             if (task.Name == "Send E-mail" && task.State == TaskState.Working)
             {
                 // Simulate sending email
@@ -35,6 +37,8 @@ namespace WorkflowEngineV1._0.Handlers
             }
             else if (_nextHandler != null)
             {
+                Console.WriteLine("_nextHandler is null in SendEmailTaskHandler.cs");
+
                 await _nextHandler.Handle(task, engine);
             }
         }

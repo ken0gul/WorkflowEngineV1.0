@@ -15,13 +15,16 @@ namespace WorkflowEngineV1._0.Handlers
 
         public async Task Handle(TaskItem task, WorkflowEngine engine)
         {
+
+            Console.WriteLine("Handle() is running for StartTaskHandler)");
             if (task.Name == "Start" && task.State == TaskState.Working)
             {
                 // Complete the Start task
                 task.State = TaskState.Completed;
                 await engine.UpdateTask(task);
-
                 // Proceed to the next handler
+                Console.WriteLine("The NextHandler in StartTaskHandler: " + _nextHandler.ToString());
+
                 if (_nextHandler != null)
                 {
                     await _nextHandler.Handle(task, engine);

@@ -9,6 +9,7 @@ namespace WorkflowEngineV1._0.Engine
     {
         private readonly ApplicationDbContext _context;
         private ITaskHandler _firstHandler;
+        private ITaskHandler _currentHandler;
 
         public WorkflowEngine(ApplicationDbContext context)
         {
@@ -18,6 +19,7 @@ namespace WorkflowEngineV1._0.Engine
         public void SetFirstHandler(ITaskHandler handler)
         {
             _firstHandler = handler;
+            _currentHandler = handler;
         }
 
         public async Task StartWorkflow(int workflowId, Document document)
