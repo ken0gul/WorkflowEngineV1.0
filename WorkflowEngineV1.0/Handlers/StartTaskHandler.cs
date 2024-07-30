@@ -3,24 +3,35 @@ using WorkflowEngineV1._0.Models;
 
 namespace WorkflowEngineV1._0.Handlers
 {
-    public class StartTaskHandler : TaskHandler
+
+    public class StartTaskHandler : ITaskHandler
     {
-        protected override bool CanHandle(TaskItem task) => task.Name == "start";
-        
+        private ITaskHandler _nextHandler;
 
-        protected override async Task Execute(TaskItem taskItem, WorkflowEngine workflowEngine)
+        public void SetNext(ITaskHandler nextHandler)
         {
-
-            Console.WriteLine("StartTaskHandler is getting executed!!!!!!!!!!!!!!!!!!!!!!");
-            taskItem.State = TaskState.Working;
-            await workflowEngine.UpdateTaskState(taskItem);
-            taskItem.State = TaskState.Completed;
-            await workflowEngine.UpdateTaskState(taskItem);
+            _nextHandler = nextHandler;
         }
 
-        protected override TaskItem GetNextTask(TaskItem task, WorkflowEngine workflowEngine)
+        public async Task Handle(TaskItem task, WorkflowEngine engine)
         {
-            return workflowEngine.GetNextTask(task);
+            if (task.Name == "Start" && task.State == TaskState.Working)
+            {
+                // Complete the Start task
+                task.State = TaskState.Completed;
+                await engine.UpdateTask(task);
+
+                // Proceed to the next handler
+                if (_nextHandler != null)
+                {
+                    await _nextHandler.Handle(task, engine);
+                }
+            }
+            else if (_nextHandler != null)
+            {
+                await _nextHandler.Handle(task, engine);
+            }
         }
     }
+
 }

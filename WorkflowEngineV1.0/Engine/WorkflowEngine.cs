@@ -8,17 +8,16 @@ namespace WorkflowEngineV1._0.Engine
     public class WorkflowEngine
     {
         private readonly ApplicationDbContext _context;
-        private TaskHandler _firstHandler;
+        private ITaskHandler _firstHandler;
 
         public WorkflowEngine(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public void SetFirstHandler(TaskHandler firstHandler)
+        public void SetFirstHandler(ITaskHandler handler)
         {
-
-            _firstHandler = firstHandler;
+            _firstHandler = handler;
         }
 
         public async Task StartWorkflow(int workflowId, Document document)
@@ -27,56 +26,68 @@ namespace WorkflowEngineV1._0.Engine
                 .Include(w => w.Tasks)
                 .FirstOrDefaultAsync(w => w.Id == workflowId);
 
-        
-
-            // if workflow does not exist then throw it
             if (workflow == null) throw new Exception("Workflow not found");
 
+            // Set workflow and tasks to preparing state
+            workflow.State = TaskState.Preparing;
+            foreach (var task in workflow.Tasks)
+            {
+                task.State = TaskState.Working;
+            }
 
+            // Update the document reference
             workflow.DocumentId = document.Id;
             workflow.Document = document;
 
-            // Save changes to the database
             _context.Workflows.Update(workflow);
             await _context.SaveChangesAsync();
 
-            // get the start task
+            // Initialize handlers
+            var startHandler = new StartTaskHandler();
+            var createDocHandler = new CreateDocTaskHandler();
+            var sendEmailHandler = new SendEmailTaskHandler();
+            var finishHandler = new FinishTaskHandler();
+
+            startHandler.SetNext(createDocHandler);
+            createDocHandler.SetNext(sendEmailHandler);
+            sendEmailHandler.SetNext(finishHandler);
+
+            SetFirstHandler(startHandler);
+
+            // Start processing the workflow
+            await ProcessWorkflow(workflow);
+        }
+
+        private async Task ProcessWorkflow(Workflow workflow)
+        {
             var startTask = workflow.Tasks.FirstOrDefault(t => t.Name.Equals("Start"));
 
             if (startTask != null)
             {
                 await _firstHandler.Handle(startTask, this);
             }
-
         }
-        public async Task UpdateTaskState(TaskItem taskItem)
+        public async Task UpdateTask(TaskItem task)
         {
-            _context.TaskItems.Update(taskItem);
+            _context.TaskItems.Update(task);
             await _context.SaveChangesAsync();
         }
 
-        public TaskItem GetNextTask(TaskItem taskItem)
+        public async Task UpdateWorkflow(Workflow workflow)
         {
-            var connection = _context.Connections.FirstOrDefault(c => c.StartTaskId == taskItem.Name);
-            return connection != null ? _context.TaskItems.Find(connection.EndTaskId) : null;
+            _context.Workflows.Update(workflow);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task SendEmail()
+        public async Task<Workflow> GetWorkflowByTask(int taskId)
         {
-            Console.WriteLine("E-Mail is being sent");
-            await Task.Delay(1500);
-            Console.WriteLine("Email is sent");
-        }
+            var task = await _context.TaskItems
+                .Include(t => t.Workflow)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
 
-        public void CompleteWorkflow(int workflowId)
-        {
-            var workflow = _context.Workflows.Find(workflowId);
-            if (workflow != null)
-            {
-                workflow.State = TaskState.Completed;
-                _context.Workflows.Update(workflow);
-                _context.SaveChanges();
-            }
+            return task?.Workflow;
         }
     }
+
+
 }

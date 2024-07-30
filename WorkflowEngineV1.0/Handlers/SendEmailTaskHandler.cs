@@ -3,25 +3,41 @@ using WorkflowEngineV1._0.Models;
 
 namespace WorkflowEngineV1._0.Handlers
 {
-    public class SendEmailTaskHandler : TaskHandler
+    public class SendEmailTaskHandler : ITaskHandler
     {
-        protected override bool CanHandle(TaskItem task) => task.Name == "Send E-mail";
-      
+        private ITaskHandler _nextHandler;
 
-        protected override async Task Execute(TaskItem task, WorkflowEngine workflowEngine)
+        public void SetNext(ITaskHandler nextHandler)
         {
-            task.State = TaskState.Working;
-            await workflowEngine.UpdateTaskState(task);
-            await workflowEngine.SendEmail();
-            task.State = TaskState.Completed;
-            await workflowEngine.UpdateTaskState(task);
+            _nextHandler = nextHandler;
         }
 
-        protected override TaskItem GetNextTask(TaskItem task, WorkflowEngine workflowEngine)
+        public async Task Handle(TaskItem task, WorkflowEngine engine)
         {
-            return workflowEngine.GetNextTask(task);
-        }
+            if (task.Name == "Send E-mail" && task.State == TaskState.Working)
+            {
+                // Simulate sending email
+                Console.WriteLine("E-Mail is being sent");
+                await Task.Delay(1500); // Simulate delay
+                Console.WriteLine("Email is sent");
 
-     
+                // Complete the Send E-mail task
+                task.State = TaskState.Completed;
+
+                // Save changes
+                await engine.UpdateTask(task);
+
+                // Proceed to next handler
+                if (_nextHandler != null)
+                {
+                    await _nextHandler.Handle(task, engine);
+                }
+            }
+            else if (_nextHandler != null)
+            {
+                await _nextHandler.Handle(task, engine);
+            }
+        }
     }
+
 }

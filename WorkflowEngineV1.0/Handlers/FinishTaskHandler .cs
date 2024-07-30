@@ -3,22 +3,44 @@ using WorkflowEngineV1._0.Models;
 
 namespace WorkflowEngineV1._0.Handlers
 {
-    public class FinishTaskHandler : TaskHandler
+    public class FinishTaskHandler : ITaskHandler
     {
-        protected override bool CanHandle(TaskItem task) => task.Name == "Finish";
+        private ITaskHandler _nextHandler;
 
-        protected override async Task Execute(TaskItem task, WorkflowEngine workflowEngine)
+        public void SetNext(ITaskHandler nextHandler)
         {
-            task.State = TaskState.Working;
-            await workflowEngine.UpdateTaskState(task);
-            task.State = TaskState.Completed;
-            await workflowEngine.UpdateTaskState(task);
-            workflowEngine.CompleteWorkflow(task.WorkflowId.Value);
+            _nextHandler = nextHandler;
         }
 
-        protected override TaskItem GetNextTask(TaskItem task, WorkflowEngine workflowEngine)
+        public async Task Handle(TaskItem task, WorkflowEngine engine)
         {
-            return null; // No next task for the finish task
+            if (task.Name == "Finish" && task.State == TaskState.Working)
+            {
+                // Complete the Finish task
+                task.State = TaskState.Completed;
+
+                // Save changes
+                await engine.UpdateTask(task);
+
+                // Update workflow state
+                var workflow = await engine.GetWorkflowByTask(task.Id.Value);
+                workflow.State = TaskState.Completed;
+
+                // Complete all tasks
+                foreach (var t in workflow.Tasks)
+                {
+                    t.State = TaskState.Completed;
+                    await engine.UpdateTask(t);
+                }
+
+                // Save changes
+                await engine.UpdateWorkflow(workflow);
+            }
+            else if (_nextHandler != null)
+            {
+                await _nextHandler.Handle(task, engine);
+            }
         }
     }
+
 }

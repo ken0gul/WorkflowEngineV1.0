@@ -3,7 +3,8 @@ using WorkflowEngineV1._0.Models;
 using WorkflowEngineV1._0.Data;
 using WorkflowEngineV1._0.Services;
 using Microsoft.EntityFrameworkCore;
-using WorkflowEngineV1._0.Handlers;
+using System.Linq;
+using System.Threading.Tasks;
 using WorkflowEngineV1._0.Engine;
 
 namespace WorkflowEngineV1._0.Controllers
@@ -12,13 +13,12 @@ namespace WorkflowEngineV1._0.Controllers
     [ApiController]
     public class DocumentsApiController : ControllerBase
     {
-         private readonly ApplicationDbContext _context;
-        private readonly WorkflowService _workflowService;
+        private readonly ApplicationDbContext _context;
         private readonly WorkflowEngine _workflowEngine;
-        public DocumentsApiController(ApplicationDbContext context, WorkflowService workflowService, WorkflowEngine workflowEngine)
+
+        public DocumentsApiController(ApplicationDbContext context, WorkflowEngine workflowEngine)
         {
             _context = context;
-            _workflowService = workflowService;
             _workflowEngine = workflowEngine;
         }
 
@@ -32,22 +32,17 @@ namespace WorkflowEngineV1._0.Controllers
                 {
                     return BadRequest("Invalid WorkflowId.");
                 }
+
                 document.Id = Guid.NewGuid();
                 document.CreatedDate = DateTime.UtcNow;
                 document.UpdatedDate = DateTime.UtcNow;
                 document.Workflow = workflow;
 
-            }
+                _context.Documents.Add(document);
+                await _context.SaveChangesAsync();
 
-            
-
-            _context.Documents.Add(document);
-            await _context.SaveChangesAsync();
-
-            // Start the workflow
-            if (document.WorkflowId > 0)
-            {
-                await StartWorkflow(document);
+                // Start the workflow
+                await _workflowEngine.StartWorkflow(document.WorkflowId, document);
             }
 
             return CreatedAtAction(nameof(GetDocument), new { id = document.Id }, document);
@@ -67,13 +62,6 @@ namespace WorkflowEngineV1._0.Controllers
             return document;
         }
 
-        private async Task StartWorkflow(Document document)
-        {
-            // Start the workflow
-            await _workflowEngine.StartWorkflow(document.WorkflowId, document);
-        }
-        
-
         [HttpPost("approveDocument/{documentId}")]
         public async Task<IActionResult> ApproveDocument(Guid documentId)
         {
@@ -88,21 +76,36 @@ namespace WorkflowEngineV1._0.Controllers
             }
 
             var workflow = document.Workflow;
-            workflow.State = TaskState.Working;
 
-            // Update the tasks' states
+            // Update task states for approval
             foreach (var task in workflow.Tasks)
             {
                 if (task.Name == "Start" || task.Name == "Create Doc")
                 {
                     task.State = TaskState.Completed;
-                    document.isPublished = true;
+                }
+                else if (task.Name == "Send E-mail")
+                {
+                    task.State = TaskState.Completed;
+                }
+                else if (task.Name == "Finish")
+                {
+                    task.State = TaskState.Working;
                 }
             }
 
-            await _context.SaveChangesAsync();
+            workflow.State = TaskState.Working;
+
+            await _workflowEngine.UpdateWorkflow(workflow);
+
+            foreach (var task in workflow.Tasks)
+            {
+                await _workflowEngine.UpdateTask(task);
+            }
+
             return Ok(document);
         }
+
         [HttpPost("publishDocument/{documentId}")]
         public async Task<IActionResult> PublishDocument(Guid documentId)
         {
@@ -117,77 +120,24 @@ namespace WorkflowEngineV1._0.Controllers
             }
 
             var workflow = document.Workflow;
-            var finishTask = workflow.Tasks.FirstOrDefault(t => t.Name == "Finish");
 
-            if (finishTask != null)
-            {
-                finishTask.State = TaskState.Completed;
-            }
+            // Update task states for publishing
             foreach (var task in workflow.Tasks)
             {
-                if (task.Name == "Send E-mail")
-                {
-                    task.State = TaskState.Working;
-                    SendEmail();
-                    task.State = TaskState.Completed;
-                }
+                task.State = TaskState.Completed;
             }
+
             workflow.State = TaskState.Completed;
 
-            await _context.SaveChangesAsync();
+            await _workflowEngine.UpdateWorkflow(workflow);
+
+            foreach (var task in workflow.Tasks)
+            {
+                await _workflowEngine.UpdateTask(task);
+            }
+
             return Ok(document);
         }
 
-        private async void SendEmail()
-        {
-            Console.WriteLine("E-Mail is being sent");
-            await Task.Delay(1500);
-            Console.WriteLine("Email is sent");
-        }
-        private void ProcessWorkflow(Guid workflowInstanceId)
-        {
-            // Implement the logic to process the workflow tasks asynchronously
-            // Update the state of each task and the workflow accordingly
-        }
     }
 }
-//private async Task StartWorkflow(Document document)
-//{
-//    // Fetch the existing workflow with tasks and connections
-//    var workflow = await _context.Workflows
-//        .Include(w => w.Tasks)
-//        .Include(w => w.Connections) // Include connections
-//        .FirstOrDefaultAsync(w => w.Id == document.WorkflowId);
-
-//    if (workflow != null)
-//    {
-//        // Update the workflow state
-//        workflow.State = TaskState.Preparing;
-
-//        // Update the document reference (if needed)
-//        workflow.DocumentId = document.Id;
-//        workflow.Document = document;
-
-//        // Set all the tasks to preparing in the beginning
-//        foreach (var item in workflow.Tasks)
-//        {
-//            item.State = TaskState.Preparing;
-
-//        }
-//        // Update the state of each task
-//        foreach (var task in workflow.Tasks)
-//        {
-//            if (task.Name == "Start" || task.Name == "Create Doc")
-//            {
-//            task.State = TaskState.Preparing;
-//            }
-//        }
-
-//        // Save changes to the context
-//         _context.Workflows.Update(workflow);
-//        await _context.SaveChangesAsync();
-
-//        // Optionally, you could start processing the workflow asynchronously
-//        // ProcessWorkflow(workflow.Id);
-//    }
-//}

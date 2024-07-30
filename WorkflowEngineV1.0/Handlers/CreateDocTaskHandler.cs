@@ -3,22 +3,36 @@ using WorkflowEngineV1._0.Models;
 
 namespace WorkflowEngineV1._0.Handlers
 {
-    public class CreateDocTaskHandler : TaskHandler
+    public class CreateDocTaskHandler : ITaskHandler
     {
-        protected override bool CanHandle(TaskItem task) => task.Name == "Create Doc";
+        private ITaskHandler _nextHandler;
 
-        protected override async Task Execute(TaskItem task, WorkflowEngine workflowEngine)
+        public void SetNext(ITaskHandler nextHandler)
         {
-            task.State = TaskState.Working;
-            await workflowEngine.UpdateTaskState(task);
-            // Implement the document creation logic here
-            task.State = TaskState.Completed;
-            await workflowEngine.UpdateTaskState(task);
+            _nextHandler = nextHandler;
         }
 
-        protected override TaskItem GetNextTask(TaskItem task, WorkflowEngine workflowEngine)
+        public async Task Handle(TaskItem task, WorkflowEngine engine)
         {
-            return workflowEngine.GetNextTask(task);
+            if (task.Name == "Create Doc" && task.State == TaskState.Working)
+            {
+                // Complete the Create Doc task
+                task.State = TaskState.Completed;
+
+                // Save changes
+                await engine.UpdateTask(task);
+
+                // Proceed to next handler
+                if (_nextHandler != null)
+                {
+                    await _nextHandler.Handle(task, engine);
+                }
+            }
+            else if (_nextHandler != null)
+            {
+                await _nextHandler.Handle(task, engine);
+            }
         }
     }
+
 }
