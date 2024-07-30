@@ -79,31 +79,31 @@ namespace WorkflowEngineV1._0.Controllers
 
             var workflow = document.Workflow;
 
-            // Update task states for approval
-            //foreach (var task in workflow.Tasks)
-            //{
-            //    if (task.Name == "Start" || task.Name == "Create Doc")
-            //    {
-            //        task.State = TaskState.Completed;
-            //    }
-            //    else if (task.Name == "Send E-mail")
-            //    {
-            //        task.State = TaskState.Completed;
-            //    }
-            //    else if (task.Name == "Finish")
-            //    {
-            //        task.State = TaskState.Working;
-            //    }
-            //}
+            //Update task states for approval
+            foreach (var task in workflow.Tasks)
+                {
+                    if (task.Name == "Start" || task.Name == "Create Doc")
+                    {
+                        task.State = TaskState.Completed;
+                    }
+                    else if (task.Name == "Send E-mail")
+                    {
+                        task.State = TaskState.Completed;
+                    }
+                    else if (task.Name == "Finish")
+                    {
+                        task.State = TaskState.Working;
+                    }
+                }
 
-            //workflow.State = TaskState.Working;
+            workflow.State = TaskState.Working;
 
-            //await _workflowEngine.UpdateWorkflow(workflow);
+            await _workflowEngine.UpdateWorkflow(workflow);
 
-            //foreach (var task in workflow.Tasks)
-            //{
-            //    await _workflowEngine.UpdateTask(task);
-            //}
+            foreach (var task in workflow.Tasks)
+            {
+                await _workflowEngine.UpdateTask(task);
+            }
 
 
             return Ok(document);
