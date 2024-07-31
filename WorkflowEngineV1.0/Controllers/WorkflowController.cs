@@ -82,6 +82,7 @@ namespace WorkflowEngineV1._0.Controllers
                     }).ToList(),
                     Connections = workflowDto.Connections.Select(c => new Connection
                     {
+
                         StartTaskId = c.StartTaskId,
                         EndTaskId = c.EndTaskId,
                         XLoc = c.XLoc,

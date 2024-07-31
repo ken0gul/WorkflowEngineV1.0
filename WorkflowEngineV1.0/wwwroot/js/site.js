@@ -134,6 +134,7 @@ document.addEventListener('mouseup', (e) => {
 });
 
 function drawConnections(mouseX = null, mouseY = null) {
+    connections.forEach(c => console.log(c))
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
     connections.forEach(conn => {
         const startDot = conn.start.querySelector('.dot');
@@ -259,6 +260,7 @@ async function saveWorkflow() {
             console.log('Workflow saved successfully.');
             inputField.value = ''
             inputField.hidden = true;
+            location.reload()
         } else {
             const errorText = await response.text();
             console.error('Error saving workflow:', errorText);

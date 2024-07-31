@@ -25,6 +25,7 @@ namespace WorkflowEngineV1._0.Engine
         {
             var workflow = await _context.Workflows
                 .Include(w => w.Tasks)
+                .Include(wc => wc.Connections)
                 .FirstOrDefaultAsync(w => w.Id == workflowId);
 
             if (workflow == null) throw new Exception("Workflow not found");
@@ -49,9 +50,32 @@ namespace WorkflowEngineV1._0.Engine
             var sendEmailHandler = new SendEmailTaskHandler();
             var finishHandler = new FinishTaskHandler();
 
-            startHandler.SetNext(createDocHandler);
-            createDocHandler.SetNext(sendEmailHandler);
-            sendEmailHandler.SetNext(finishHandler);
+            workflow.Connections.ForEach(conn =>
+            {
+
+                switch (conn.StartTaskId)
+                {
+                    case "Start":
+                        startHandler.SetNext(createDocHandler);
+                        break;
+
+                    case "Create Doc":
+                        createDocHandler.SetNext(sendEmailHandler);
+                        break;
+
+                    case "Send E-mail":
+                        sendEmailHandler.SetNext(finishHandler);
+                        break;
+
+                    // Optionally, handle cases where conn.StartTaskId doesn't match any of the above
+                    default:
+                        // Handle unknown or default case if necessary
+                        throw new ArgumentException($"Unexpected StartTaskId: {conn.StartTaskId}");
+                }
+            });
+            //startHandler.SetNext(createDocHandler);
+            //createDocHandler.SetNext(sendEmailHandler);
+            //sendEmailHandler.SetNext(finishHandler);
 
             // State
             createDocHandler._shouldMoveToNextHandler = shouldMove.Value;
@@ -59,6 +83,8 @@ namespace WorkflowEngineV1._0.Engine
             finishHandler.isDone = isDone.Value;
 
             SetFirstHandler(startHandler);
+
+            
 
             // Start processing the workflow
             await ProcessWorkflow(workflow);

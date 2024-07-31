@@ -17,9 +17,6 @@ namespace WorkflowEngineV1._0.Handlers
 
         public async Task Handle(TaskItem task, WorkflowEngine engine, Workflow workflow)
         {
-            Console.WriteLine($"TaskItem is {task.Name} in CreateDocTaskHandler");
-            Console.WriteLine($"task.Name => {task.Name}");
-            Console.WriteLine($"task.State => {task.State}");
             if (task.Name == "Create Doc" && task.State == TaskState.Working)
             {
                 // Complete the Create Doc task

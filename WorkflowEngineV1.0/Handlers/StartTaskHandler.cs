@@ -24,7 +24,6 @@ namespace WorkflowEngineV1._0.Handlers
                 task.State = TaskState.Completed;
                 await engine.UpdateTask(task);
                 // Proceed to the next handler
-                Console.WriteLine("The NextHandler in StartTaskHandler: " + _nextHandler.ToString());
                 foreach(var taskItem in workflow.Tasks)
                 {
                     if (taskItem.Name == "Create Doc")
