@@ -121,6 +121,10 @@ namespace WorkflowEngineV1._0.Controllers
                 await _workflowEngine.UpdateTask(task);
             }
 
+            document.isPublished = true;
+            _context.Documents.Update(document);
+            _context.SaveChanges();
+
             return Ok(document);
         }
 

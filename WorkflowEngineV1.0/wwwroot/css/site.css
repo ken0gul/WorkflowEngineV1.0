@@ -43,7 +43,7 @@
     top: 100%;
     left: 100%;
     transform: translate(-50%, -50%);
-    cursor: pointer;
+    cursor: url("../plus-sign.png"), auto;
 }
 
 #droppable-area {
@@ -298,4 +298,8 @@ canvas {
 
 #workflow-name-input {
     margin-bottom: 10px;
+    border-radius: 11px;
+    font-size: 11px;
+    padding: 8px 12px;
+    width: 100%;
 }

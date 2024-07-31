@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", async() => {
     workflowNameFromDb = null;
     var workflows = await getWorkflowStates();
     updateWorkflowStatesUI(workflows)
+
+    const inputField = document.getElementById("workflow-name-input")
+    inputField.value = ""
 })
 
 // Set canvas size
@@ -154,7 +157,7 @@ function drawConnections(mouseX = null, mouseY = null) {
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.lineTo(endX, endY);
-            ctx.strokeStyle = 'black';
+            ctx.strokeStyle = 'red';
             ctx.lineWidth = 2;
             ctx.stroke();
         }
@@ -392,6 +395,7 @@ async function loadWorkflow(id) {
        
 
         const workflowNameInput = document.getElementById("workflow-name-input")
+
         if (workflowNameInput) {
             workflowNameInput.value = workflow?.caption;
         }
