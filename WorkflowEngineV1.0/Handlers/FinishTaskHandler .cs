@@ -6,15 +6,16 @@ namespace WorkflowEngineV1._0.Handlers
     public class FinishTaskHandler : ITaskHandler
     {
         private ITaskHandler _nextHandler;
+        public bool isDone { get; set; } = false; 
 
         public void SetNext(ITaskHandler nextHandler)
         {
             _nextHandler = nextHandler;
         }
 
-        public async Task Handle(TaskItem task, WorkflowEngine engine)
+        public async Task Handle(TaskItem task, WorkflowEngine engine, Workflow wf)
         {
-            if (task.Name == "Finish" && task.State == TaskState.Working)
+            if (task.Name == "Finish" && task.State == TaskState.Working && isDone)
             {
                 // Complete the Finish task
                 task.State = TaskState.Completed;
@@ -38,7 +39,7 @@ namespace WorkflowEngineV1._0.Handlers
             }
             else if (_nextHandler != null)
             {
-                await _nextHandler.Handle(task, engine);
+                await _nextHandler.Handle(task, engine, wf);
             }
         }
     }

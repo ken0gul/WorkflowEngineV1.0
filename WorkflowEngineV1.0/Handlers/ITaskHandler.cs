@@ -6,7 +6,7 @@ namespace WorkflowEngineV1._0.Handlers
     public interface ITaskHandler
     {
         void SetNext(ITaskHandler nextHandler);
-        Task Handle(TaskItem task, WorkflowEngine engine);
+        Task Handle(TaskItem task, WorkflowEngine engine, Workflow workflow);
     }
 
 }

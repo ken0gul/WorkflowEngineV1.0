@@ -9,7 +9,7 @@ namespace WorkflowEngineV1._0.Engine
     {
         private readonly ApplicationDbContext _context;
         private ITaskHandler _firstHandler;
-        private ITaskHandler _currentHandler;
+
 
         public WorkflowEngine(ApplicationDbContext context)
         {
@@ -19,10 +19,9 @@ namespace WorkflowEngineV1._0.Engine
         public void SetFirstHandler(ITaskHandler handler)
         {
             _firstHandler = handler;
-            _currentHandler = handler;
         }
 
-        public async Task StartWorkflow(int workflowId, Document document)
+        public async Task StartWorkflow(int workflowId, Document document, bool? shouldMove, bool? isDone)
         {
             var workflow = await _context.Workflows
                 .Include(w => w.Tasks)
@@ -54,6 +53,11 @@ namespace WorkflowEngineV1._0.Engine
             createDocHandler.SetNext(sendEmailHandler);
             sendEmailHandler.SetNext(finishHandler);
 
+            // State
+            createDocHandler._shouldMoveToNextHandler = shouldMove.Value;
+            sendEmailHandler._shouldMoveToNextHandler = shouldMove.Value;
+            finishHandler.isDone = isDone.Value;
+
             SetFirstHandler(startHandler);
 
             // Start processing the workflow
@@ -66,7 +70,7 @@ namespace WorkflowEngineV1._0.Engine
 
             if (startTask != null)
             {
-                await _firstHandler.Handle(startTask, this);
+                await _firstHandler.Handle(startTask, this, workflow);
             }
         }
         public async Task UpdateTask(TaskItem task)

@@ -295,3 +295,7 @@ canvas {
     border-radius: 5px;
     background-color: #eaffea;
 }
+
+#workflow-name-input {
+    margin-bottom: 10px;
+}
