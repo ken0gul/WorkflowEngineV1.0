@@ -448,9 +448,9 @@ function createDroppableTaskElement(taskItem) {
 
     content.appendChild(taskElement);
 
-    taskElement.querySelector("#delete-btn").classList.add("visible")
+    taskElement.querySelector("#delete-btn")?.classList.add("visible")
 
-    taskElement.querySelector("#delete-btn").addEventListener("click", async () => deleteTask(taskItem.name, workflowId));
+    taskElement.querySelector("#delete-btn")?.addEventListener("click", async () => deleteTask(taskItem.name, workflowId));
 
 
 
