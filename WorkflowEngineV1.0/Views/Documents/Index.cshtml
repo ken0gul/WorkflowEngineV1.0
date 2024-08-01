@@ -58,7 +58,20 @@
                 method: 'POST'
             });
             if (response.ok) {
-                location.reload();
+                // location.reload();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sent!!',
+                    toast: true,
+                    text: 'E-mail has been sent!',
+                    position: "bottom-end",
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(() => {
+                    location.reload()
+
+                })
             } else {
                 console.error('Error approving document:', response);
             }

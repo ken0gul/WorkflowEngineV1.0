@@ -51,7 +51,6 @@
                 });
 
                 if (response.ok) {
-                    alert('Document created successfully.');
                     window.location.href = '/Documents'; // Redirect to the document list page
                 } else {
                     const errorText = await response.text();

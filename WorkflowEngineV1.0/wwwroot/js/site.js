@@ -273,7 +273,7 @@ async function saveWorkflow() {
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: 'Your task was completed successfully.',
+                text: 'Workflow has been saved successfully.',
                 showConfirmButton: false,
                 timer: 1000
             }).then(() => {

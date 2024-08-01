@@ -26,7 +26,6 @@ namespace WorkflowEngineV1._0.Controllers
             {
                 return BadRequest(ModelState);
             }
-            Console.WriteLine(workflowDto);
             Workflow foundWorkflow = await _context.Workflows
                 .Include(w => w.Tasks)
                 .Include(w => w.Connections)
@@ -41,6 +40,7 @@ namespace WorkflowEngineV1._0.Controllers
                 foundWorkflow.State = TaskState.Preparing;
                 _context.Workflows.Update(foundWorkflow);
                 _context.SaveChanges();
+
                 
             }
             if (foundWorkflow != null)
