@@ -303,3 +303,13 @@ canvas {
     padding: 8px 12px;
     width: 100%;
 }
+
+
+#delete-btn {
+    display: none;
+}
+
+/*Delete Button*/
+#delete-btn.visible {
+    display: block;
+}

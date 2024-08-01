@@ -40,12 +40,7 @@ namespace WorkflowEngineV1._0.Controllers
             return NoContent();
         }
 
-        //[HttpGet("connections")]
-        //public async Task<IActionResult> GetConnections()
-        //{
-        //    var connections = await _context.Connections.Include(c => c.StartTask).Include(c => c.EndTask).ToListAsync();
-        //    return Ok(connections);
-        //}
+     
 
         [HttpPost("connections")]
         public async Task<IActionResult> SaveConnection([FromBody] Connection connection)
@@ -53,6 +48,22 @@ namespace WorkflowEngineV1._0.Controllers
             _context.Connections.Add(connection);
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTask(string id, [FromQuery] int workflowId)
+        {
+            var workflow = await _context.Workflows
+                
+                .Include(W => W.Tasks)
+                .FirstOrDefaultAsync(w => w.Id == workflowId);
+               
+            var taskFound = workflow?.Tasks.Find(t => t.Name == id);
+            if (taskFound == null) return NotFound();
+
+            _context.TaskItems.Remove(taskFound);
+            await _context.SaveChangesAsync();
+
+            return Ok("Task has been removed!");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿const tasks = document.querySelectorAll('#sidebar .task');
+﻿
+const tasks = document.querySelectorAll('#sidebar .task');
 const content = document.getElementById('droppable-area');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -287,7 +288,7 @@ document.querySelectorAll("#workflow-btn").forEach(btn => {
     });
 })
 
-
+// Start workflow
 document.querySelector(".start-btn").addEventListener("click", () => {
     startWorkflow(workflowId)
 })
@@ -433,7 +434,9 @@ function createDroppableTaskElement(taskItem) {
     taskElement.style.position = 'absolute';
     taskElement.style.left = `${taskItem.x}px`;
     taskElement.style.top = `${taskItem.y}px`;
-    taskElement.innerHTML = `${taskItem.iconHtml}`
+    taskElement.innerHTML = `${taskItem.iconHtml}`;
+    //// Delete button
+    // Change the visibility of trash button to visible
     taskElement.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', null); // For Firefox
         currentDraggedTask = taskElement;
@@ -442,7 +445,20 @@ function createDroppableTaskElement(taskItem) {
     taskElement.addEventListener('dragend', (e) => {
         e.target.classList.remove('dragging');
     });
+
     content.appendChild(taskElement);
+
+    taskElement.querySelector("#delete-btn").classList.add("visible")
+
+    taskElement.querySelector("#delete-btn").addEventListener("click", async () => deleteTask(taskItem.name, workflowId));
+
+
+
+
+
+
+  
+    
 
     const dot = taskElement.querySelector('.dot');
     dot.addEventListener('mousedown', (e) => {
@@ -479,4 +495,27 @@ function generateRandomId(length = 10) {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
+}
+
+
+async function deleteTask(taskId, workflowId) {
+    try {
+        const response = await fetch(`/api/TaskApi/${taskId}?workflowId=${workflowId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            const result = await response.text();
+            console.log(result); // Handle success message
+            alert("Task has been removed!");
+            
+        } else {
+            const errorText = await response.text();
+            console.error('Error deleting task:', errorText);
+            alert('Error deleting task: ' + errorText);
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        alert('Error: ' + error);
+    }
 }
