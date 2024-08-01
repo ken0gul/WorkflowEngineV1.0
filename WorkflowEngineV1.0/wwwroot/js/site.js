@@ -409,7 +409,7 @@ async function loadWorkflow(id) {
         const workflow = await response.json();
         workflowNameFromDb = workflow.workflowName;
         const taskStates = await pollTaskStates(id);
-       
+
 
         const workflowNameInput = document.getElementById("workflow-name-input")
 
@@ -522,8 +522,23 @@ async function deleteTask(taskId, workflowId) {
 
         if (response.ok) {
             const result = await response.text();
-            console.log(result); // Handle success message
-            alert("Task has been removed!");
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',  // Position of the toast
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#333', // Custom background color
+                color: '#fff', // Custom text color
+                icon: 'success',
+                title: 'Task has been deleted',
+                text: result
+            });
+            //await loadWorkflow(workflowId)
+
+
+
+
+
             
         } else {
             const errorText = await response.text();

@@ -32,6 +32,17 @@ namespace WorkflowEngineV1._0.Controllers
                 .Include(w => w.Connections)
                 .FirstOrDefaultAsync(w => w.WorkflowName == workflowDto.WorkflowName);
 
+
+            // If tasks are deleted and workflow is empty..
+            if (foundWorkflow?.Tasks.Count() == 0)
+            {
+                foundWorkflow.Connections.Clear();
+                foundWorkflow.Tasks.Clear();
+                foundWorkflow.State = TaskState.Preparing;
+                _context.Workflows.Update(foundWorkflow);
+                _context.SaveChanges();
+                
+            }
             if (foundWorkflow != null)
             {
                 // Update existing workflow
