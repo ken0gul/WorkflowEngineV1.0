@@ -201,7 +201,13 @@ async function saveWorkflow() {
     // select workflow-name-input
     const inputField = document.getElementById("workflow-name-input");
     if (inputField.value === "") {
-        alert("Type in the name!")
+        Swal.fire({
+            icon: 'error',
+            title: "Invalid name",
+            text: 'Workflow name cannot be empty!',
+            toast: true,
+            timer: 1500
+        });
         return;
     } 
 
@@ -264,7 +270,17 @@ async function saveWorkflow() {
             console.log('Workflow saved successfully.');
             inputField.value = ''
             inputField.hidden = true;
-            location.reload()
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Your task was completed successfully.',
+                showConfirmButton: false,
+                timer: 1000
+            }).then(() => {
+                location.reload()
+
+            })
+
         } else {
             const errorText = await response.text();
             console.error('Error saving workflow:', errorText);
