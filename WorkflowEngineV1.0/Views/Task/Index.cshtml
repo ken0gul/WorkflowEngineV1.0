@@ -47,14 +47,14 @@
             @foreach(var workflow in Model)
             {
 
-                    <button id="workflow-btn" data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName"><span hidden>@workflow.WorkflowName</span>@workflow.Caption</button>
+                    <button id="workflow-btn" class="workflow-items"  data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName"><span hidden>@workflow.WorkflowName</span>@workflow.Caption</button>
             }
         </div>
 
         <input type="text" id="workflow-name-input" placeholder="Workflow name .."/>
         <div class="action-buttons">
         <button class="save-btn">Save</button>
-        <button class="start-btn">Start</button>
+        <button class="delete-btn">Delete</button>
         </div>
         </div>
     </div>

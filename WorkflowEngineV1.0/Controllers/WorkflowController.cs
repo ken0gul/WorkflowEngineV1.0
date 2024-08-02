@@ -3,6 +3,7 @@ using WorkflowEngineV1._0.Data;
 using WorkflowEngineV1._0.Models;
 using Microsoft.EntityFrameworkCore;
 using WorkflowEngineV1._0.Services;
+using WorkflowEngineV1._0.Data.Repositories.Interfaces;
 
 namespace WorkflowEngineV1._0.Controllers
 {
@@ -12,12 +13,15 @@ namespace WorkflowEngineV1._0.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        private readonly IUnitOfWork _unitOfWork;
+
         private readonly WorkflowService _workflowService;
 
-        public WorkflowController(ApplicationDbContext context, WorkflowService workflowService)
+        public WorkflowController(ApplicationDbContext context, WorkflowService workflowService, IUnitOfWork unitOfWork)
         {
             _context = context;
             _workflowService = workflowService;
+            _unitOfWork = unitOfWork;
         }
         [HttpPost("saveWorkflow")]
         public async Task<IActionResult> SaveWorkflow([FromBody] Workflow workflowDto)
@@ -26,9 +30,8 @@ namespace WorkflowEngineV1._0.Controllers
             {
                 return BadRequest(ModelState);
             }
-            Workflow foundWorkflow = await _context.Workflows
-                .Include(w => w.Tasks)
-                .Include(w => w.Connections)
+            Workflow foundWorkflow = await _unitOfWork.Workflows
+                .GetAll(w => w.Tasks, w => w.Connections)
                 .FirstOrDefaultAsync(w => w.WorkflowName == workflowDto.WorkflowName);
 
 
@@ -38,10 +41,16 @@ namespace WorkflowEngineV1._0.Controllers
                 foundWorkflow.Connections.Clear();
                 foundWorkflow.Tasks.Clear();
                 foundWorkflow.State = TaskState.Preparing;
-                _context.Workflows.Update(foundWorkflow);
-                _context.SaveChanges();
+                await _unitOfWork.Workflows.UpdateAsync(foundWorkflow);
+                await _unitOfWork.CompleteAsync();
 
-                
+                var foundDoc = await _unitOfWork.Documents.GetFirstOrDefaultAsync(d => d.WorkflowId == foundWorkflow.Id);
+                if (foundDoc != null)
+                {
+                  await _unitOfWork.Documents.DeleteAsync(foundDoc);
+                await _unitOfWork.CompleteAsync();
+
+                }
             }
             if (foundWorkflow != null)
             {
@@ -170,6 +179,27 @@ namespace WorkflowEngineV1._0.Controllers
                 return NotFound();
             }
             return Ok(workflows);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteWorkflow(int id)
+        {
+            var workflow = await _context.Workflows
+                  .Include(w => w.Tasks) 
+                  .Include(w => w.Connections)
+                  .FirstOrDefaultAsync(w => id == w.Id);
+            
+            if (workflow == null)
+            {
+                return NotFound();
+            }
+
+            else
+            {
+                _context.Workflows.Remove(workflow);
+                _context.SaveChanges();
+            }
+            return Ok("Workflow has been deleted!");
         }
     }
 

@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WorkflowEngineV1._0.Data;
+using WorkflowEngineV1._0.Data.Repositories.Interfaces;
+using WorkflowEngineV1._0.Data.Repositories;
 using WorkflowEngineV1._0.Engine;
 using WorkflowEngineV1._0.Handlers;
 using WorkflowEngineV1._0.Services;
@@ -11,6 +13,8 @@ builder.Services.AddControllersWithViews();
 // DB Config
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Initialize handlers and chain them
 var startHandler = new StartTaskHandler();

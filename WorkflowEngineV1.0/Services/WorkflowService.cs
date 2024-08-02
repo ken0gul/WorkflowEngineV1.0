@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WorkflowEngineV1._0.Data;
+using WorkflowEngineV1._0.Data.Repositories.Interfaces;
 using WorkflowEngineV1._0.Models;
 
 namespace WorkflowEngineV1._0.Services
@@ -7,18 +8,19 @@ namespace WorkflowEngineV1._0.Services
     public class WorkflowService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public WorkflowService(ApplicationDbContext context)
+        public WorkflowService(ApplicationDbContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task ExecuteWorkflow(int workflowId)
         {
-            var workflow = await _context.Workflows
-                .Include(w => w.Tasks)
-                .Include(w => w.Connections)
-                .FirstOrDefaultAsync(w => w.Id == workflowId);
+            var workflow = await _unitOfWork.Workflows
+                  .GetAll(w => w.Tasks, w => w.Connections)
+                  .FirstOrDefaultAsync(w => w.Id == workflowId);
 
 
             // If workflow is null
@@ -46,7 +48,7 @@ namespace WorkflowEngineV1._0.Services
             workflow.State = TaskState.Completed;
             }
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CompleteAsync();
 
         }
 

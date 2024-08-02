@@ -13,8 +13,8 @@ namespace WorkflowEngineV1._0.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Workflow>()
-       .HasKey(w => w.Id);
+                    modelBuilder.Entity<Workflow>()
+               .HasKey(w => w.Id);
 
             modelBuilder.Entity<Document>()
                 .HasKey(d => d.Id);
@@ -31,6 +31,12 @@ namespace WorkflowEngineV1._0.Data
                 .WithMany()
                 .HasForeignKey(w => w.DocumentId)
                 .OnDelete(DeleteBehavior.NoAction); // Use Restrict instead of Cascade
+
+             modelBuilder.Entity<Workflow>()
+               .HasOne(w => w.Document)
+               .WithOne(d => d.Workflow)
+               .HasForeignKey<Document>(d => d.WorkflowId)
+               .OnDelete(DeleteBehavior.Cascade);
             SeedData(modelBuilder);
         }
 

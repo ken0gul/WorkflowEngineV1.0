@@ -6,11 +6,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WorkflowEngineV1._0.Migrations
 {
     /// <inheritdoc />
-    public partial class addWorkFlowToDocumentEntity : Migration
+    public partial class addEntitiesToDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Workflows",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WorkflowName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    State = table.Column<int>(type: "int", nullable: false),
+                    Caption = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Workflows", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Connections",
                 columns: table => new
@@ -26,6 +42,12 @@ namespace WorkflowEngineV1._0.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Connections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Connections_Workflows_WorkflowId",
+                        column: x => x.WorkflowId,
+                        principalTable: "Workflows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,31 +60,18 @@ namespace WorkflowEngineV1._0.Migrations
                     Author = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    isPublished = table.Column<bool>(type: "bit", nullable: false),
                     WorkflowId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Documents", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Workflows",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WorkflowName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    State = table.Column<int>(type: "int", nullable: false),
-                    DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Workflows", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Workflows_Documents_DocumentId",
-                        column: x => x.DocumentId,
-                        principalTable: "Documents",
-                        principalColumn: "Id");
+                        name: "FK_Documents_Workflows_WorkflowId",
+                        column: x => x.WorkflowId,
+                        principalTable: "Workflows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,7 +86,8 @@ namespace WorkflowEngineV1._0.Migrations
                     iconHTML = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WorkflowId = table.Column<int>(type: "int", nullable: true),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    State = table.Column<int>(type: "int", nullable: false)
+                    State = table.Column<int>(type: "int", nullable: false),
+                    StateDTO = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -97,52 +107,29 @@ namespace WorkflowEngineV1._0.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_WorkflowId",
                 table: "Documents",
-                column: "WorkflowId");
+                column: "WorkflowId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskItems_WorkflowId",
                 table: "TaskItems",
                 column: "WorkflowId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Workflows_DocumentId",
-                table: "Workflows",
-                column: "DocumentId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Connections_Workflows_WorkflowId",
-                table: "Connections",
-                column: "WorkflowId",
-                principalTable: "Workflows",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Documents_Workflows_WorkflowId",
-                table: "Documents",
-                column: "WorkflowId",
-                principalTable: "Workflows",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Documents_Workflows_WorkflowId",
-                table: "Documents");
-
             migrationBuilder.DropTable(
                 name: "Connections");
+
+            migrationBuilder.DropTable(
+                name: "Documents");
 
             migrationBuilder.DropTable(
                 name: "TaskItems");
 
             migrationBuilder.DropTable(
                 name: "Workflows");
-
-            migrationBuilder.DropTable(
-                name: "Documents");
         }
     }
 }

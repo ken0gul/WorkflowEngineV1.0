@@ -2,6 +2,7 @@
 const tasks = document.querySelectorAll('#sidebar .task');
 const content = document.getElementById('droppable-area');
 const canvas = document.getElementById('canvas');
+const workflows = document.querySelectorAll(".delete-btn");
 const ctx = canvas.getContext('2d');
 let draggingDot = null;
 let startTask = null;
@@ -12,13 +13,28 @@ let workflowNameFromDb = null;
 let workflowId = null;
 
 
-document.addEventListener("DOMContentLoaded", async() => {
+
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+  
     workflowNameFromDb = null;
     var workflows = await getWorkflowStates();
     updateWorkflowStatesUI(workflows)
 
     const inputField = document.getElementById("workflow-name-input")
     inputField.value = ""
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Workflow Deletion
+    console.log(workflows)
+    workflows.forEach(w => {
+        w.addEventListener("click", () => {
+            console.log("Clicked")
+            deleteWorkflow(workflowId)
+        });
+    })
 })
 
 // Set canvas size
@@ -305,7 +321,7 @@ document.querySelectorAll("#workflow-btn").forEach(btn => {
 })
 
 // Start workflow
-document.querySelector(".start-btn").addEventListener("click", () => {
+document.querySelector(".delete-btn").addEventListener("click", () => {
     startWorkflow(workflowId)
 })
 
@@ -530,7 +546,7 @@ async function deleteTask(taskId, workflowId) {
                 background: '#333', // Custom background color
                 color: '#fff', // Custom text color
                 icon: 'success',
-                title: 'Task has been deleted',
+                title: 'Success!',
                 text: result
             });
             //await loadWorkflow(workflowId)
@@ -550,3 +566,43 @@ async function deleteTask(taskId, workflowId) {
         alert('Error: ' + error);
     }
 }
+
+
+async function deleteWorkflow(workflowId) {
+    try {
+        const response = await fetch(`/api/Workflow/${workflowId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            const result = await response.text();
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',  // Position of the toast
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#333', // Custom background color
+                color: '#fff', // Custom text color
+                icon: 'success',
+                title: 'Success!',
+                text: result
+            });
+            //await loadWorkflow(workflowId)
+
+
+
+
+
+
+        } else {
+            const errorText = await response.text();
+            console.error('Error deleting workflow:', errorText);
+            alert('Error deleting workflow: ' + errorText);
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        alert('Error: ' + error);
+    }
+}
+
+

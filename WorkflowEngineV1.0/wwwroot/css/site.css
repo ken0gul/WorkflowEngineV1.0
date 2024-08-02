@@ -101,6 +101,9 @@ canvas {
 }
 
 
+
+
+
 /*LOGO*/
 .logo {
     font-family: 'Arial', sans-serif;
@@ -229,7 +232,7 @@ canvas {
 
 /*START WORKFLOW*/
 
-.start-btn {
+.delete-btn {
     width: 50%;
     padding: 10px;
     background-color: #BB3011;
@@ -241,15 +244,16 @@ canvas {
     transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
     font-weight: bold;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
 
-    .start-btn:hover {
+    .delete-btn:hover {
         background-color: #A5290E;
         box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         transform: translateY(-2px);
     }
 
-    .start-btn:active {
+    .delete-btn:active {
         background-color: #93200D;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         transform: translateY(1px);
@@ -298,6 +302,7 @@ canvas {
 
 #workflow-name-input {
     margin-bottom: 10px;
+    margin-bottom: 10px;
     border-radius: 11px;
     font-size: 11px;
     padding: 8px 12px;
@@ -307,9 +312,14 @@ canvas {
 
 #delete-btn {
     display: none;
+    
 }
 
 /*Delete Button*/
 #delete-btn.visible {
     display: block;
+}
+
+.delete-btn {
+    flex-grow: 1;
 }

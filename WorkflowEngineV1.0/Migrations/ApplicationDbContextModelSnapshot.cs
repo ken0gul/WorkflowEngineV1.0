@@ -92,7 +92,8 @@ namespace WorkflowEngineV1._0.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkflowId");
+                    b.HasIndex("WorkflowId")
+                        .IsUnique();
 
                     b.ToTable("Documents");
                 });
@@ -171,8 +172,6 @@ namespace WorkflowEngineV1._0.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DocumentId");
-
                     b.ToTable("Workflows");
                 });
 
@@ -190,9 +189,9 @@ namespace WorkflowEngineV1._0.Migrations
             modelBuilder.Entity("WorkflowEngineV1._0.Models.Document", b =>
                 {
                     b.HasOne("WorkflowEngineV1._0.Models.Workflow", "Workflow")
-                        .WithMany()
-                        .HasForeignKey("WorkflowId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .WithOne("Document")
+                        .HasForeignKey("WorkflowEngineV1._0.Models.Document", "WorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Workflow");
@@ -209,17 +208,9 @@ namespace WorkflowEngineV1._0.Migrations
 
             modelBuilder.Entity("WorkflowEngineV1._0.Models.Workflow", b =>
                 {
-                    b.HasOne("WorkflowEngineV1._0.Models.Document", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                    b.Navigation("Connections");
 
                     b.Navigation("Document");
-                });
-
-            modelBuilder.Entity("WorkflowEngineV1._0.Models.Workflow", b =>
-                {
-                    b.Navigation("Connections");
 
                     b.Navigation("Tasks");
                 });
