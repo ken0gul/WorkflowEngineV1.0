@@ -28,6 +28,7 @@ namespace WorkflowEngineV1._0.Engine
                 .Include(wc => wc.Connections)
                 .FirstOrDefaultAsync(w => w.Id == workflowId);
 
+            // Let's handle our exceptions gracefully :)
             if (workflow == null) throw new Exception("Workflow not found");
 
             // Set workflow and tasks to preparing state
@@ -60,6 +61,7 @@ namespace WorkflowEngineV1._0.Engine
                         break;
 
                     case "Create Doc":
+
                         createDocHandler.SetNext(sendEmailHandler);
                         break;
 
@@ -70,13 +72,17 @@ namespace WorkflowEngineV1._0.Engine
                     // Optionally, handle cases where conn.StartTaskId doesn't match any of the above
                     default:
                         // Handle unknown or default case if necessary
-                        throw new ArgumentException($"Unexpected StartTaskId: {conn.StartTaskId}");
+                        workflow.HasProblem = true;
+                        workflow.ProblemTaskId = conn.StartTaskId;
+                       
+                        break;
+                        //throw new ArgumentException($"Unexpected StartTaskId: {conn.StartTaskId}");
                 }
             });
             //startHandler.SetNext(createDocHandler);
             //createDocHandler.SetNext(sendEmailHandler);
             //sendEmailHandler.SetNext(finishHandler);
-
+            await _context.SaveChangesAsync();
             // State
             createDocHandler._shouldMoveToNextHandler = shouldMove.Value;
             sendEmailHandler._shouldMoveToNextHandler = shouldMove.Value;

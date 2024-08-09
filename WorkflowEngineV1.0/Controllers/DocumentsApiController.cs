@@ -43,6 +43,8 @@ namespace WorkflowEngineV1._0.Controllers
 
                 // Start the workflow
                 await _workflowEngine.StartWorkflow(document.WorkflowId, document, false, false);
+
+                
             }
 
             return CreatedAtAction(nameof(GetDocument), new { id = document.Id }, document);

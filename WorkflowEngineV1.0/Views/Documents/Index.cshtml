@@ -30,6 +30,15 @@
                 <td>@document.Author</td>
                 <td>@workflow.State</td>
                 <td>
+
+                    @if (workflow.HasProblem)
+                    {
+                        // Maybe go back to workflow to fix it??
+                        <button  class="btn btn-danger">Error</button>
+
+                    } else
+                    {
+                        
                     @if (workflow.State == TaskState.Preparing && !document.isPublished)
                     {
                         <button onclick="approveDocument('@document.Id')" class="btn btn-success">Approve</button>
@@ -41,6 +50,7 @@
                     @if (workflow.State == TaskState.Completed && document.isPublished)
                     {
                         <span class="published-label">Published</span>
+                    }
                     }
                 </td>
                 <td>

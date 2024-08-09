@@ -30,5 +30,13 @@ namespace WorkflowEngineV1._0.Models
         public Guid? DocumentId { get; set; }
         [JsonIgnore]
         public Document? Document { get; set; }
+
+
+        [JsonIgnore]
+        public bool HasProblem { get; set; } = false;
+
+
+        [JsonIgnore]
+        public string? ProblemTaskId { get; set; }
     }
 }
