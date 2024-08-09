@@ -22,6 +22,7 @@ namespace WorkflowEngineV1._0.Handlers
             {
                 // Complete the Start task
                 task.State = TaskState.Completed;
+               
                 await engine.UpdateTask(task);
                 // Proceed to the next handler
                 foreach(var taskItem in workflow.Tasks)

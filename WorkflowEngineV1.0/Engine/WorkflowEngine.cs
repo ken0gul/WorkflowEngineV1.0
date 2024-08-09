@@ -23,6 +23,7 @@ namespace WorkflowEngineV1._0.Engine
 
         public async Task StartWorkflow(int workflowId, Document document, bool? shouldMove, bool? isDone)
         {
+            // Find the workflow along with its tasks and connections
             var workflow = await _context.Workflows
                 .Include(w => w.Tasks)
                 .Include(wc => wc.Connections)
@@ -31,8 +32,9 @@ namespace WorkflowEngineV1._0.Engine
             // Let's handle our exceptions gracefully :)
             if (workflow == null) throw new Exception("Workflow not found");
 
-            // Set workflow and tasks to preparing state
+            // Set workflow to preparing state
             workflow.State = TaskState.Preparing;
+            // and tasks to preparing state
             foreach (var task in workflow.Tasks)
             {
                 task.State = TaskState.Working;

@@ -34,6 +34,8 @@ namespace WorkflowEngineV1._0.Controllers
                 .GetAll(w => w.Tasks, w => w.Connections)
                 .FirstOrDefaultAsync(w => w.WorkflowName == workflowDto.WorkflowName);
 
+            //Let's reset HasProblem flag to make it re-work
+            foundWorkflow.HasProblem = false;
 
             // If tasks are deleted and workflow is empty..
             if (foundWorkflow?.Tasks.Count() == 0)

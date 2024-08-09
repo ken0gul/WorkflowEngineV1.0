@@ -79,9 +79,11 @@ namespace WorkflowEngineV1._0.Controllers
             }
 
             var workflow = document.Workflow;
+
+            
             await _workflowEngine.StartWorkflow(document.WorkflowId, document, true, false);
        
-
+            if (workflow == null) { return NotFound(); }
             workflow.State = TaskState.Working;
 
             await _workflowEngine.UpdateWorkflow(workflow);

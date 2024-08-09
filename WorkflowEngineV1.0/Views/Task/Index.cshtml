@@ -47,7 +47,7 @@
             @foreach(var workflow in Model)
             {
 
-                    <button id="workflow-btn" class="workflow-items"  data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName"><span hidden>@workflow.WorkflowName</span>@workflow.Caption</button>
+                    <button id="workflow-btn" onclick="selectWorkflow(@workflow.Id)" class="workflow-items @(workflow.HasProblem ? "btn btn-danger" : "")"  data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName"><span hidden>@workflow.WorkflowName</span>@workflow.Caption</button>
             }
         </div>
 
@@ -55,6 +55,7 @@
         <div class="action-buttons">
         <button class="save-btn">Save</button>
         <button class="delete-btn">Delete</button>
+        @* <button id="reTrigger-btn" class="btn btn-info" hidden>Re-trigger</button> *@
         </div>
         </div>
     </div>
@@ -63,5 +64,24 @@
         <canvas id="canvas"></canvas>
           
     </div>
+
+    @* <script defer>
+
+        let selectedWorkflow;
+
+
+        function selectWorkflow(workflowItemId) {
+            selectedWorkflow = ""+ workflowItemId;
+            fetch(`/api/Workflow/${workflowItemId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data) {
+                        const reTriggerBtn = document.getElementById("reTrigger-btn");
+                        console.log(data)
+                        reTriggerBtn.setAttribute('hidden', false);
+                    }
+                });
+        }
+     </script> *@
 </body>
 </html>
