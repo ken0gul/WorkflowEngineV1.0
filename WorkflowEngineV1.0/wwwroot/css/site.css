@@ -89,7 +89,7 @@ canvas {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        height: 250px;
+        height: 350px;
         overflow-y: scroll;
         margin-bottom: 50px;
         padding:10px;

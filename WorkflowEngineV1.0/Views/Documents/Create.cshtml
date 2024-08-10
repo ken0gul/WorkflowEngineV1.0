@@ -4,31 +4,70 @@
     ViewData["Title"] = "Create Document";
 }
 
-<h1>Create Document</h1>
-<form id="createDocumentForm">
-    <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" id="Name" />
+<style>
+
+    .container {
+        max-width: 800px;
+        margin-top: 50px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .form-control {
+        border-radius: 0.25rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 0.25rem;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+    .card {
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+   <div class="container">
+        <div class="card">
+            <h1 class="mb-4">Create Document</h1>
+            <form id="createDocumentForm">
+                <div class="form-group">
+                    <label for="Name">Document Name</label>
+                    <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter document name" />
+                </div>
+                <div class="form-group">
+                    <label for="Description">Description</label>
+                    <textarea class="form-control" id="Description" name="Description" rows="4" placeholder="Enter document description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="Author">Author</label>
+                    <input type="text" class="form-control" id="Author" name="Author" placeholder="Enter author name" />
+                </div>
+                <div class="form-group">
+                    <label for="WorkflowId">Workflow</label>
+                    <select class="form-control" id="WorkflowId" name="WorkflowId">
+                        <option value="" disabled selected>Select a workflow</option>
+                        @foreach (var workflow in ViewBag.Workflows)
+                        {
+                            <option value="@workflow.Id" disabled=@(workflow.DocumentId != null ? true : false)>
+                                @workflow.WorkflowName - @workflow.Caption @if (workflow.DocumentId != null) { <span class="text-muted"> (Associated Document)</span> }
+                            </option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control" id="Description"></textarea>
-    </div>
-    <div class="form-group">
-        <label asp-for="Author"></label>
-        <input asp-for="Author" class="form-control" id="Author" />
-    </div>
-    <div class="form-group">
-        <label asp-for="WorkflowId"></label>
-        <select asp-for="WorkflowId" class="form-control" id="WorkflowId">
-            @foreach (var workflow in ViewBag.Workflows)
-            {
-                <option disabled="@(workflow.DocumentId != null)" value="@workflow.Id">@workflow.WorkflowName - @workflow.Caption - Associated Document - @workflow.DocumentId</option>
-            }
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Create</button>
-</form>
 @section Scripts {
     <script>
         document.getElementById('createDocumentForm').addEventListener('submit', async function (e) {
