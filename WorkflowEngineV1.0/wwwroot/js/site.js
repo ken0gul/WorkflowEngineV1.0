@@ -106,8 +106,10 @@ content.addEventListener('drop', (e) => {
         // Clone the task if it's from the sidebar
         const clonedTask = currentDraggedTask.cloneNode(true);
         clonedTask.setAttribute('data-id', `cloned-task-${generateRandomId()}`)
-        clonedTask.style.background = "#ECECEC";
+        clonedTask.style.background = "#white";
         clonedTask.style.position = 'absolute';
+        clonedTask.style.boxShadow = "2px 2px 4px rgba(0, 0, 0, 0.2), 4px 4px 8px rgba(0, 0, 0, 0.2)";
+
         clonedTask.style.left = `${x - clonedTask.offsetWidth / 2}px`;
         clonedTask.style.top = `${y - clonedTask.offsetHeight / 2}px`;
         clonedTask.classList.remove('dragging');
