@@ -35,8 +35,11 @@ namespace WorkflowEngineV1._0.Controllers
                 .FirstOrDefaultAsync(w => w.WorkflowName == workflowDto.WorkflowName);
 
             //Let's reset HasProblem flag to make it re-work
-            foundWorkflow.HasProblem = false;
+            if (foundWorkflow != null)
+            {
 
+                foundWorkflow.HasProblem = false;
+            }
             // If tasks are deleted and workflow is empty..
             if (foundWorkflow?.Tasks.Count() == 0)
             {

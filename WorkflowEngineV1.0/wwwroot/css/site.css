@@ -10,9 +10,7 @@
     overflow-y: auto;
 }
 
-button {
-    width: 50%;
-}
+
 
 .task {
     width: 120px;
@@ -63,9 +61,11 @@ canvas {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: -1; /*burasi onemli yoksa grid canvasin onune gider*/
     pointer-events: none;
 }
+
+
 
 .task {
     border: 1px solid #ccc;
@@ -106,7 +106,9 @@ canvas {
 
 
 
-
+.action-btn {
+    width: 50%;
+}
 
 /*LOGO*/
 .logo {
@@ -327,3 +329,25 @@ canvas {
 .delete-btn {
     flex-grow: 1;
 }
+
+
+/* Scroll bar */
+
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+::-webkit-scrollbar-track {
+    background: #e0e0e0; /* Track (part of the scrollbar not being dragged) */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888; /* Handle (part of the scrollbar being dragged) */
+    border-radius: 6px; /* Rounded corners for the handle */
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555; /* Handle on hover */
+    }
+
+

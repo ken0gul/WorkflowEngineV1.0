@@ -24,7 +24,6 @@ namespace WorkflowEngineV1._0.Models
         [JsonIgnore]
         public int WorkflowId { get; set; } // Foreign Key to Workflow
         [JsonIgnore]
-
         public Workflow? Workflow { get; set; } // Navigation property to Workflow
 
    

@@ -42,9 +42,41 @@ function setCanvasSize() {
     canvas.width = content.clientWidth;
     canvas.width = content.clientWidth;
     canvas.height = content.clientHeight;
+
+   
 }
 setCanvasSize();
+drawGrids();
+function drawGrids() {
+    const width = canvas.width
+    const height = canvas.height
+
+    // Let's add some grids to our canvas
+    const gridSize = 60; // Size of the grid squares
+    const gridColor = '#ccc';
+
+
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+
+    // Draw vertical lines
+    for (let x = 0; x <= width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+    }
+
+    // Draw horizontal lines
+    for (let y = 0; y <= height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+    }
+}
 window.addEventListener('resize', setCanvasSize);
+window.addEventListener('resize', drawGrids);
 
 // Drag and drop tasks from the sidebar
 tasks.forEach(task => {
@@ -74,6 +106,7 @@ content.addEventListener('drop', (e) => {
         // Clone the task if it's from the sidebar
         const clonedTask = currentDraggedTask.cloneNode(true);
         clonedTask.setAttribute('data-id', `cloned-task-${generateRandomId()}`)
+        clonedTask.style.background = "#ECECEC";
         clonedTask.style.position = 'absolute';
         clonedTask.style.left = `${x - clonedTask.offsetWidth / 2}px`;
         clonedTask.style.top = `${y - clonedTask.offsetHeight / 2}px`;
@@ -156,6 +189,7 @@ document.addEventListener('mouseup', (e) => {
 function drawConnections(mouseX = null, mouseY = null) {
     connections.forEach(c => console.log(c))
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
+    drawGrids();
     connections.forEach(conn => {
         const startDot = conn.start.querySelector('.dot');
         const endDot = conn.end.querySelector('.dot');
