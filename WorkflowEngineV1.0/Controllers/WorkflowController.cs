@@ -11,15 +11,14 @@ namespace WorkflowEngineV1._0.Controllers
     [ApiController]
     public class WorkflowController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
 
         private readonly IUnitOfWork _unitOfWork;
 
         private readonly WorkflowService _workflowService;
 
-        public WorkflowController(ApplicationDbContext context, WorkflowService workflowService, IUnitOfWork unitOfWork)
+        public WorkflowController(WorkflowService workflowService, IUnitOfWork unitOfWork)
         {
-            _context = context;
             _workflowService = workflowService;
             _unitOfWork = unitOfWork;
         }
@@ -88,7 +87,7 @@ namespace WorkflowEngineV1._0.Controllers
                     YLoc = c.YLoc
                 }).ToList();
 
-                _context.Workflows.Update(foundWorkflow);
+                await _unitOfWork.Workflows.UpdateAsync(foundWorkflow);
             }
             else
             {
@@ -116,10 +115,10 @@ namespace WorkflowEngineV1._0.Controllers
                     }).ToList()
                 };
 
-                _context.Workflows.Add(workflow);
+                await _unitOfWork.Workflows.UpdateAsync(workflow);
             }
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CompleteAsync();
             return Ok();
         }
 
@@ -127,11 +126,14 @@ namespace WorkflowEngineV1._0.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetWorkflow(int id)
         {
-            Console.WriteLine(id);
-            var workflow = await _context.Workflows
-                .Include(w => w.Tasks)
-                .Include(w => w.Connections)
-                .FirstOrDefaultAsync(w => w.Id == id);
+            //var workflow = await _context.Workflows
+            //    .Include(w => w.Tasks)
+            //    .Include(w => w.Connections)
+            //    .FirstOrDefaultAsync(w => w.Id == id);
+
+            var workflow = await _unitOfWork.Workflows
+                            .GetAll(w => w.Tasks,  w => w.Connections)
+                            .FirstOrDefaultAsync(w =>  w.Id == id); // Can we use GetFirstOrDefaultAsync here??
 
             if (workflow == null)
             {
@@ -157,8 +159,8 @@ namespace WorkflowEngineV1._0.Controllers
         [HttpGet("getStates/{workflowId}")]
         public async Task<IActionResult> GetTaskState(int workflowId)
         {
-            var workflow = await _context.Workflows
-                     .Include(w => w.Tasks)
+            var workflow = await _unitOfWork.Workflows
+                     .GetAll(w => w.Tasks)
                      .FirstOrDefaultAsync(w => w.Id == workflowId);
             if (workflow == null)
                 return NotFound();
@@ -177,8 +179,7 @@ namespace WorkflowEngineV1._0.Controllers
         [HttpGet("getWorkflowStates")]
         public async Task<IActionResult> GetWorkflowStates()
         {
-            var workflows = await _context.Workflows
-             .ToListAsync();
+            var workflows = await _unitOfWork.Workflows.GetAllAsync();
             if (workflows == null)
             {
                 return NotFound();
@@ -189,11 +190,11 @@ namespace WorkflowEngineV1._0.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWorkflow(int id)
         {
-            var workflow = await _context.Workflows
-                  .Include(w => w.Tasks) 
-                  .Include(w => w.Connections)
-                  .FirstOrDefaultAsync(w => id == w.Id);
-            
+            var workflow = await _unitOfWork.Workflows
+                          .GetAll(w => w.Tasks, w => w.Connections)
+                          .FirstOrDefaultAsync(w => w.Id == id); // Can we use GetFirstOrDefaultAsync here??
+
+
             if (workflow == null)
             {
                 return NotFound();
@@ -201,8 +202,8 @@ namespace WorkflowEngineV1._0.Controllers
 
             else
             {
-                _context.Workflows.Remove(workflow);
-                _context.SaveChanges();
+                await _unitOfWork.Workflows.DeleteAsync(workflow);
+                await _unitOfWork.CompleteAsync();
             }
             return Ok("Workflow has been deleted!");
         }
