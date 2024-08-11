@@ -5,61 +5,158 @@
     var documentWorkflows = ViewBag.DocumentWorkflows as List<DocumentWorkflowViewModel>;
 }
 
-<h1>Documents List</h1>
+<style>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Author</th>
-            <th>Workflow State</th>
-            <th>Actions</th>
-            <th>Workflow Name</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var documentWorkflow in documentWorkflows)
-        {
-            var document = documentWorkflow.Document;
-            var workflow = documentWorkflow.Workflow;
+    
 
-            <tr>
-                <td>@document.Name</td>
-                <td>@document.Description</td>
-                <td>@document.Author</td>
-                <td>@workflow.State</td>
-                <td>
+    /* Container */
+    .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-                    @if (workflow.HasProblem)
-                    {
-                        // Maybe go back to workflow to fix it??
-                        <button  class="action-btn btn btn-danger" disabled>Error</button>
+    /* Page Title */
+    .page-title {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #333;
+    }
 
-                    } else
-                    {
-                        
-                    @if (workflow.State == TaskState.Preparing && !document.isPublished)
-                    {
-                            <button onclick="approveDocument('@document.Id')" class="action-btn btn btn-success">Approve</button>
-                    }
-                    @if (workflow.State == TaskState.Working)
-                    {
-                            <button onclick="publishDocument('@document.Id')" class="action-btn btn btn-primary">Publish</button>
-                    }
-                    @if (workflow.State == TaskState.Completed && document.isPublished)
-                    {
-                        <span class="published-label">Published</span>
-                    }
-                    }
-                </td>
-                <td>
-                    @workflow.Caption
-                </td>
-            </tr>
+    /* Table Styles */
+    .document-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+        .document-table th,
+        .document-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
-    </tbody>
-</table>
+
+        .document-table th {
+            background-color: #f4f4f4;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .document-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+    /* Button Styles */
+    .action-btn {
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        width: 100%;
+    }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+    .btn-success {
+        background-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+    .btn-primary {
+        background-color: #007bff;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    /* Published Label */
+    .published-label {
+        display: inline-block;
+        background-color: #1b8a6b;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        width: 100%;
+        text-align: center;
+    }
+</style>
+
+   <div class="container">
+        <h1 class="page-title">Documents List</h1>
+        <table class="document-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Author</th>
+                    <th>Workflow State</th>
+                    <th>Actions</th>
+                    <th>Workflow Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var documentWorkflow in documentWorkflows)
+                {
+                    var document = documentWorkflow.Document;
+                    var workflow = documentWorkflow.Workflow;
+
+                    <tr>
+                        <td>@document.Name</td>
+                        <td>@document.Description</td>
+                        <td>@document.Author</td>
+                        <td>@workflow.State</td>
+                        <td>
+                            @if (workflow.HasProblem)
+                            {
+                                <button class="action-btn btn btn-danger" disabled>Error</button>
+                            } 
+                            else
+                            {
+                                @if (workflow.State == TaskState.Preparing && !document.isPublished)
+                            {
+                                <button onclick="approveDocument('@document.Id')" class="action-btn btn btn-success">Approve</button>
+                            }
+                            @if (workflow.State == TaskState.Working)
+                            {
+                                <button onclick="publishDocument('@document.Id')" class="action-btn btn btn-primary">Publish</button>
+                            }
+                            @if (workflow.State == TaskState.Completed && document.isPublished)
+                            {
+                                <span class="published-label">Published</span>
+                            }
+                        }
+                    </td>
+                    <td>@workflow.Caption</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 @section Scripts {
     <script>
