@@ -20,4 +20,4 @@ Workflow Engine V1.0 is a powerful and flexible system designed to manage and ex
 - **JavaScript**: For dynamic interactions on the frontend.
 - **SweetAlert2**: Library for beautiful and customizable alerts.
 
-![Workflow Diagram](images/workflow-diagram.png)
+![Workflow Diagram](WorkflowEngineV1.0/wwwroot/images/engine-img.png)
