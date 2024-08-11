@@ -8,6 +8,13 @@ using WorkflowEngineV1._0.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Logger
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 // DB Config
@@ -68,4 +75,12 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllers(); // Ensure this line is included
+
+
+
+// Log a startup message
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Application started");
+
+
 app.Run();

@@ -17,10 +17,13 @@ namespace WorkflowEngineV1._0.Controllers
 
         private readonly WorkflowService _workflowService;
 
-        public WorkflowController(WorkflowService workflowService, IUnitOfWork unitOfWork)
+        private readonly ILogger<WorkflowController> _logger;
+
+        public WorkflowController(WorkflowService workflowService, IUnitOfWork unitOfWork, ILogger<WorkflowController> logger)
         {
             _workflowService = workflowService;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
         [HttpPost("saveWorkflow")]
         public async Task<IActionResult> SaveWorkflow([FromBody] Workflow workflowDto)
@@ -126,14 +129,11 @@ namespace WorkflowEngineV1._0.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetWorkflow(int id)
         {
-            //var workflow = await _context.Workflows
-            //    .Include(w => w.Tasks)
-            //    .Include(w => w.Connections)
-            //    .FirstOrDefaultAsync(w => w.Id == id);
 
+            _logger.LogInformation($"/// Workflow with id: {id} is being fetched! ///");
             var workflow = await _unitOfWork.Workflows
                             .GetAll(w => w.Tasks,  w => w.Connections)
-                            .FirstOrDefaultAsync(w =>  w.Id == id); // Can we use GetFirstOrDefaultAsync here??
+                            .FirstOrDefaultAsync(w =>  w.Id == id); 
 
             if (workflow == null)
             {
@@ -143,18 +143,20 @@ namespace WorkflowEngineV1._0.Controllers
             return Ok(workflow);
         }
 
-        [HttpPost("start/{workflowId}")]
-        public async Task<IActionResult> StartWorkflow(int workflowId)
-        {
-            try
-            {
-                await _workflowService.ExecuteWorkflow(workflowId);
-                return Ok();
-            }catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpPost("start/{workflowId}")]
+        //public async Task<IActionResult> StartWorkflow(int workflowId)
+        //{
+        //    _logger.LogInformation($"/// StartWorkFlow Action has been called with `start/workflowId` with id {workflowId} ///");
+
+        //    try
+        //    {
+        //        await _workflowService.ExecuteWorkflow(workflowId);
+        //        return Ok();
+        //    }catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpGet("getStates/{workflowId}")]
         public async Task<IActionResult> GetTaskState(int workflowId)
