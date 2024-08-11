@@ -2,6 +2,7 @@
 using WorkflowEngineV1._0.Data;
 using WorkflowEngineV1._0.Models;
 using Microsoft.EntityFrameworkCore;
+using WorkflowEngineV1._0.Data.Repositories.Interfaces;
 
 namespace WorkflowEngineV1._0.Controllers
 {
@@ -10,32 +11,33 @@ namespace WorkflowEngineV1._0.Controllers
     public class TaskApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TaskApiController(ApplicationDbContext context)
+        public TaskApiController(ApplicationDbContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetTasks()
         {
 
-            var tasks = await _context.TaskItems.ToListAsync();
-            Console.Write(tasks.Count.ToString());
+            var tasks = await _unitOfWork.TaskItems.GetAllAsync();
             return Ok(tasks);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, [FromBody] TaskItem updatedTask)
         {
-            var task = await _context.TaskItems.FindAsync(id);
+            var task = await _unitOfWork.TaskItems.GetByIdAsync(id);
             if (task == null) return NotFound();
 
             task.X = updatedTask.X;
             task.Y = updatedTask.Y;
 
-            _context.TaskItems.Update(task);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.TaskItems.UpdateAsync(task);
+            await _unitOfWork.CompleteAsync();
 
             return NoContent();
         }
@@ -46,22 +48,22 @@ namespace WorkflowEngineV1._0.Controllers
         public async Task<IActionResult> SaveConnection([FromBody] Connection connection)
         {
             _context.Connections.Add(connection);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CompleteAsync();
             return NoContent();
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(string id, [FromQuery] int workflowId)
         {
-            var workflow = await _context.Workflows
+            var workflow = await _unitOfWork.Workflows
                 
-                .Include(W => W.Tasks)
+                .GetAll(W => W.Tasks)
                 .FirstOrDefaultAsync(w => w.Id == workflowId);
                
             var taskFound = workflow?.Tasks.Find(t => t.Name == id);
             if (taskFound == null) return NotFound();
 
             _context.TaskItems.Remove(taskFound);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CompleteAsync();
 
             return Ok("Task has been removed!");
         }
