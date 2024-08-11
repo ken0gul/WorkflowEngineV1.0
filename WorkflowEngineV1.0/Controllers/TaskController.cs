@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorkflowEngineV1._0.Data;
+using WorkflowEngineV1._0.Data.Repositories.Interfaces;
 using WorkflowEngineV1._0.Models;
 
 namespace WorkflowEngineV1._0.Controllers
@@ -10,15 +11,15 @@ namespace WorkflowEngineV1._0.Controllers
     public class TaskController : Controller
     {
 
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TaskController(ApplicationDbContext context)
+        public TaskController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var workflows = _context.Workflows.ToList();
+            var workflows = await _unitOfWork.Workflows.GetAllAsync();
 
             return View(workflows);
         }
