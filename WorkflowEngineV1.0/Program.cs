@@ -44,7 +44,7 @@ builder.Services.AddTransient<WorkflowEngine>(provider =>
     var createDocHandler = provider.GetRequiredService<CreateDocTaskHandler>();
     var sendEmailHandler = provider.GetRequiredService<SendEmailTaskHandler>();
     var finishHandler = provider.GetRequiredService<FinishTaskHandler>();
-    var context = provider.GetRequiredService<ApplicationDbContext>();
+    var context = provider.GetRequiredService<IUnitOfWork>();
     var engine = new WorkflowEngine(context);
     engine.SetFirstHandler(startHandler);
     return engine;

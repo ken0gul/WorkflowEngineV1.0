@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WorkflowEngineV1._0.Data;
+using WorkflowEngineV1._0.Data.Repositories.Interfaces;
 using WorkflowEngineV1._0.Handlers;
 using WorkflowEngineV1._0.Models;
 
@@ -8,12 +9,13 @@ namespace WorkflowEngineV1._0.Engine
     public class WorkflowEngine
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private ITaskHandler _firstHandler;
 
 
-        public WorkflowEngine(ApplicationDbContext context)
+        public WorkflowEngine(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public void SetFirstHandler(ITaskHandler handler)
@@ -24,9 +26,8 @@ namespace WorkflowEngineV1._0.Engine
         public async Task StartWorkflow(int workflowId, Document document, bool? shouldMove, bool? isDone)
         {
             // Find the workflow along with its tasks and connections
-            var workflow = await _context.Workflows
-                .Include(w => w.Tasks)
-                .Include(wc => wc.Connections)
+            var workflow = await _unitOfWork.Workflows
+                .GetAll(w => w.Tasks, wc => wc.Connections)
                 .FirstOrDefaultAsync(w => w.Id == workflowId);
 
             // Let's handle our exceptions gracefully :)
@@ -44,8 +45,8 @@ namespace WorkflowEngineV1._0.Engine
             workflow.DocumentId = document.Id;
             workflow.Document = document;
 
-            _context.Workflows.Update(workflow);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Workflows.UpdateAsync(workflow);
+            await _unitOfWork.CompleteAsync();
 
             // Initialize handlers
             var startHandler = new StartTaskHandler();
@@ -84,7 +85,7 @@ namespace WorkflowEngineV1._0.Engine
             //startHandler.SetNext(createDocHandler);
             //createDocHandler.SetNext(sendEmailHandler);
             //sendEmailHandler.SetNext(finishHandler);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CompleteAsync();
             // State
             createDocHandler._shouldMoveToNextHandler = shouldMove.Value;
             sendEmailHandler._shouldMoveToNextHandler = shouldMove.Value;
@@ -109,20 +110,20 @@ namespace WorkflowEngineV1._0.Engine
         }
         public async Task UpdateTask(TaskItem task)
         {
-            _context.TaskItems.Update(task);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.TaskItems.UpdateAsync(task);
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task UpdateWorkflow(Workflow workflow)
         {
-            _context.Workflows.Update(workflow);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Workflows.UpdateAsync(workflow);
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task<Workflow> GetWorkflowByTask(int taskId)
         {
-            var task = await _context.TaskItems
-                .Include(t => t.Workflow)
+            var task = await _unitOfWork.TaskItems
+                .GetAll(t => t.Workflow)
                 .FirstOrDefaultAsync(t => t.Id == taskId);
 
             return task?.Workflow;
