@@ -47,7 +47,10 @@
             @foreach(var workflow in Model)
             {
 
-                    <button id="workflow-btn" onclick="selectWorkflow(@workflow.Id)" class="workflow-items @(workflow.HasProblem ? "btn btn-danger" : "")"  data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName"><span hidden>@workflow.WorkflowName</span>@workflow.Caption</button>
+                    <button id="workflow-btn" onclick="selectWorkflow(@workflow.Id)" class="workflow-items @(workflow.HasProblem ? "btn btn-danger" : "")"
+                    data-workflow-id="@workflow.Id" data-workflow-name="@workflow.WorkflowName">
+                        <i class="fa-solid fa-gears"></i>
+                        <span hidden>@workflow.WorkflowName</span>@workflow.Caption</button>
             }
         </div>
 
