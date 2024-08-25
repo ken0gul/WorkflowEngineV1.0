@@ -40,9 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // Set canvas size
 function setCanvasSize() {
     canvas.width = content.clientWidth;
-    canvas.width = content.clientWidth;
     canvas.height = content.clientHeight;
-
+    
    
 }
 setCanvasSize();
@@ -352,6 +351,8 @@ document.querySelectorAll("#workflow-btn").forEach(btn => {
         loadWorkflow(dataId)
         workflowId = dataId;
         pollTaskStates(workflowId);
+
+        document.querySelector('nav').textContent = workflowId;
 
     });
 })

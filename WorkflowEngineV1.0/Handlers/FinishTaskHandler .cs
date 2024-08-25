@@ -17,6 +17,7 @@ namespace WorkflowEngineV1._0.Handlers
         {
             if (task.Name == "Finish" && task.State == TaskState.Working && isDone)
             {
+                Console.WriteLine("In the finishTaskHandler....");
                 // Complete the Finish task
                 task.State = TaskState.Completed;
 

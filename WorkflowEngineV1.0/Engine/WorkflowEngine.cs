@@ -54,6 +54,38 @@ namespace WorkflowEngineV1._0.Engine
             var sendEmailHandler = new SendEmailTaskHandler();
             var finishHandler = new FinishTaskHandler();
 
+            //for (int i = 0; i < workflow.Connections.Count - 1; i++)
+            //{
+            //    var conn = workflow.Connections[i];
+            //    var nextConn = workflow.Connections[i + 1];
+            //    switch (conn.StartTaskId)
+            //    {
+            //        case "Start":
+            //            startHandler.SetNext(createDocHandler);
+            //            break;
+
+            //        case "Create Doc":
+
+            //            createDocHandler.SetNext(nextConn.StartTaskId == "Send E-mail" ? sendEmailHandler : finishHandler);
+            //            break;
+
+            //        case "Send E-mail":
+            //            sendEmailHandler.SetNext(finishHandler);
+            //            break;
+
+            //        // Optionally, handle cases where conn.StartTaskId doesn't match any of the above
+            //        default:
+            //            // Handle unknown or default case if necessary
+            //            workflow.HasProblem = true;
+            //            workflow.ProblemTaskId = conn.StartTaskId;
+
+            //            break;
+            //            //throw new ArgumentException($"Unexpected StartTaskId: {conn.StartTaskId}");
+            //    }
+
+
+            //}
+
             workflow.Connections.ForEach(conn =>
             {
 
@@ -65,23 +97,29 @@ namespace WorkflowEngineV1._0.Engine
 
                     case "Create Doc":
 
-                        createDocHandler.SetNext(sendEmailHandler);
+                        createDocHandler.SetNext(conn.NextConnId == "Send E-mail" ? sendEmailHandler : finishHandler);
                         break;
 
                     case "Send E-mail":
                         sendEmailHandler.SetNext(finishHandler);
                         break;
 
+                        
+
                     // Optionally, handle cases where conn.StartTaskId doesn't match any of the above
                     default:
                         // Handle unknown or default case if necessary
                         workflow.HasProblem = true;
                         workflow.ProblemTaskId = conn.StartTaskId;
-                       
+
                         break;
                         //throw new ArgumentException($"Unexpected StartTaskId: {conn.StartTaskId}");
                 }
             });
+
+
+
+
             //startHandler.SetNext(createDocHandler);
             //createDocHandler.SetNext(sendEmailHandler);
             //sendEmailHandler.SetNext(finishHandler);
@@ -101,8 +139,9 @@ namespace WorkflowEngineV1._0.Engine
 
         private async Task ProcessWorkflow(Workflow workflow)
         {
-            var startTask = workflow.Tasks.FirstOrDefault(t => t.Name.Equals("Start"));
 
+            var startTask = workflow.Tasks.FirstOrDefault(t => t.Name.Equals("Start"));
+            Console.WriteLine("ProcessWorkflow has been triggered");
             if (startTask != null)
             {
                 await _firstHandler.Handle(startTask, this, workflow);

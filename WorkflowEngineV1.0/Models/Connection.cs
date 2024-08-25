@@ -15,6 +15,9 @@ namespace WorkflowEngineV1._0.Models
         [JsonPropertyName("endTaskId")]
         public string EndTaskId { get; set; }
 
+        [JsonIgnore]
+        public string NextConnId { get; set; } = string.Empty;
+
         [JsonPropertyName("xLoc")]
         public float XLoc { get; set; }
 

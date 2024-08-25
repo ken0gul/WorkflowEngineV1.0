@@ -27,7 +27,6 @@ namespace WorkflowEngineV1._0.Handlers
 
                 foreach (var taskItem in workflow.Tasks)
                 {
-                    Console.WriteLine(taskItem.Name);
                     if (taskItem.Name == "Send E-mail")
                     {
                         Console.WriteLine("In the IF of CreateDocTaskHandler");
@@ -37,6 +36,9 @@ namespace WorkflowEngineV1._0.Handlers
                             await _nextHandler.Handle(taskItem, engine, workflow);
                         }
 
+                    } else if(taskItem.Name == "Finish")
+                    {
+                        await _nextHandler.Handle(taskItem, engine, workflow);
                     }
                 }
              

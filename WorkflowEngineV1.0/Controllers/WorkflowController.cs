@@ -87,9 +87,24 @@ namespace WorkflowEngineV1._0.Controllers
                     StartTaskId = c.StartTaskId,
                     EndTaskId = c.EndTaskId,
                     XLoc = c.XLoc,
-                    YLoc = c.YLoc
+                    YLoc = c.YLoc,
+                    NextConnId = "",
+                   
                 }).ToList();
 
+                // Set the nextConn here
+                if (foundWorkflow.Connections.Count > 0)
+                {
+                for (int i = 0; i < foundWorkflow.Connections.Count-1; i++)
+                {
+
+                            var connection = foundWorkflow.Connections[i];
+                            var nextConn = foundWorkflow.Connections[i+1];
+                            connection.NextConnId = nextConn.StartTaskId;
+                }
+                }
+
+                
                 await _unitOfWork.Workflows.UpdateAsync(foundWorkflow);
             }
             else
