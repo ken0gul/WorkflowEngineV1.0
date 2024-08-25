@@ -17,7 +17,7 @@ namespace WorkflowEngineV1._0.Handlers
 
         public async Task Handle(TaskItem task, WorkflowEngine engine, Workflow workflow)
         {
-            if (task.Name == "Create Doc" && task.State == TaskState.Working)
+            if (task.Name == ConnName.CreateDoc && task.State == TaskState.Working)
             {
                 // Complete the Create Doc task
                 task.State = TaskState.Completed;
@@ -27,7 +27,7 @@ namespace WorkflowEngineV1._0.Handlers
 
                 foreach (var taskItem in workflow.Tasks)
                 {
-                    if (taskItem.Name == "Send E-mail")
+                    if (taskItem.Name == ConnName.SendEmail)
                     {
                         Console.WriteLine("In the IF of CreateDocTaskHandler");
                         // Proceed to next handler
@@ -36,7 +36,7 @@ namespace WorkflowEngineV1._0.Handlers
                             await _nextHandler.Handle(taskItem, engine, workflow);
                         }
 
-                    } else if(taskItem.Name == "Finish")
+                    } else if(taskItem.Name == ConnName.Finish)
                     {
                         await _nextHandler.Handle(taskItem, engine, workflow);
                     }

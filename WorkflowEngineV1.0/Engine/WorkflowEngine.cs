@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Runtime.Serialization;
 using WorkflowEngineV1._0.Data;
 using WorkflowEngineV1._0.Data.Repositories.Interfaces;
 using WorkflowEngineV1._0.Handlers;
@@ -6,6 +7,14 @@ using WorkflowEngineV1._0.Models;
 
 namespace WorkflowEngineV1._0.Engine
 {
+
+    public static class ConnName {
+        public const string Start = "Start";
+        public const string CreateDoc = "Create Doc";
+
+        public const string SendEmail = "Send E-mail";
+        public const string Finish = "Finish";
+    }
     public class WorkflowEngine
     {
         private readonly ApplicationDbContext _context;
@@ -54,53 +63,23 @@ namespace WorkflowEngineV1._0.Engine
             var sendEmailHandler = new SendEmailTaskHandler();
             var finishHandler = new FinishTaskHandler();
 
-            //for (int i = 0; i < workflow.Connections.Count - 1; i++)
-            //{
-            //    var conn = workflow.Connections[i];
-            //    var nextConn = workflow.Connections[i + 1];
-            //    switch (conn.StartTaskId)
-            //    {
-            //        case "Start":
-            //            startHandler.SetNext(createDocHandler);
-            //            break;
-
-            //        case "Create Doc":
-
-            //            createDocHandler.SetNext(nextConn.StartTaskId == "Send E-mail" ? sendEmailHandler : finishHandler);
-            //            break;
-
-            //        case "Send E-mail":
-            //            sendEmailHandler.SetNext(finishHandler);
-            //            break;
-
-            //        // Optionally, handle cases where conn.StartTaskId doesn't match any of the above
-            //        default:
-            //            // Handle unknown or default case if necessary
-            //            workflow.HasProblem = true;
-            //            workflow.ProblemTaskId = conn.StartTaskId;
-
-            //            break;
-            //            //throw new ArgumentException($"Unexpected StartTaskId: {conn.StartTaskId}");
-            //    }
-
-
-            //}
+ 
 
             workflow.Connections.ForEach(conn =>
             {
 
                 switch (conn.StartTaskId)
                 {
-                    case "Start":
+                    case ConnName.Start:
                         startHandler.SetNext(createDocHandler);
                         break;
 
-                    case "Create Doc":
+                    case ConnName.CreateDoc:
 
-                        createDocHandler.SetNext(conn.NextConnId == "Send E-mail" ? sendEmailHandler : finishHandler);
+                        createDocHandler.SetNext(conn.NextConnId == ConnName.SendEmail ? sendEmailHandler : finishHandler);
                         break;
 
-                    case "Send E-mail":
+                    case ConnName.SendEmail:
                         sendEmailHandler.SetNext(finishHandler);
                         break;
 

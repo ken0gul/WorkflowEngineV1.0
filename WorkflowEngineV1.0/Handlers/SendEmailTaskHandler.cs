@@ -19,7 +19,7 @@ namespace WorkflowEngineV1._0.Handlers
             Console.WriteLine($"task.Name => {task.Name}");
             Console.WriteLine($"task.State => {task.State}");
 
-            if (task.Name == "Send E-mail" && task.State == TaskState.Working)
+            if (task.Name == ConnName.SendEmail && task.State == TaskState.Working)
             {
                 // Simulate sending email
                 Console.WriteLine("E-Mail is being sent");
@@ -33,7 +33,7 @@ namespace WorkflowEngineV1._0.Handlers
                 await engine.UpdateTask(task);
                 foreach (var taskItem in workflow.Tasks)
                 {
-                    if (taskItem.Name == "Finish")
+                    if (taskItem.Name == ConnName.Finish)
                     {
                         // Proceed to next handler
                         if (_nextHandler != null && _shouldMoveToNextHandler)

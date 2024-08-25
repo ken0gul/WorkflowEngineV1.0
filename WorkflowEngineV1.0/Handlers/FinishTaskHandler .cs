@@ -15,7 +15,7 @@ namespace WorkflowEngineV1._0.Handlers
 
         public async Task Handle(TaskItem task, WorkflowEngine engine, Workflow wf)
         {
-            if (task.Name == "Finish" && task.State == TaskState.Working && isDone)
+            if (task.Name == ConnName.Finish && task.State == TaskState.Working && isDone)
             {
                 Console.WriteLine("In the finishTaskHandler....");
                 // Complete the Finish task

@@ -18,7 +18,7 @@ namespace WorkflowEngineV1._0.Handlers
         {
 
             Console.WriteLine("Handle() is running for StartTaskHandler)");
-            if (task.Name == "Start" && task.State == TaskState.Working)
+            if (task.Name == ConnName.Start && task.State == TaskState.Working)
             {
                 // Complete the Start task
                 task.State = TaskState.Completed;
@@ -27,7 +27,7 @@ namespace WorkflowEngineV1._0.Handlers
                 // Proceed to the next handler
                 foreach(var taskItem in workflow.Tasks)
                 {
-                    if (taskItem.Name == "Create Doc")
+                    if (taskItem.Name == ConnName.CreateDoc)
                     {
                         if (_nextHandler != null)
                         {
